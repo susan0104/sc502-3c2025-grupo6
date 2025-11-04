@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veterinaria Golden Paws</title>
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <!-- Google fonts CDN -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+    <link rel="stylesheet" href="../assets/css/style-inicio.css">
+    <link rel="stylesheet" href="../assets/css/style-layout.css">
+</head>
+
+<body>
+
+    <nav class="navbar bg-white shadow-sm d-lg-none">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <img src="../assets/img/logo.png" alt="Golden Paws" style="height:36px">
+            </a>
+            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#MenuMovil"
+                aria-controls="MenuMovil" aria-label="Abrir menú">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="MenuMovil" aria-labelledby="MenuMovilLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title d-flex align-items-center gap-2" id="MenuMovilLabel">
+                <img src="../assets/img/logo.png" alt="Golden Paws">
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <nav class="sidebar-nav p-3 d-flex flex-column justify-content-between" style="height: 100%;">
+                <ul class="nav flex-column gap-1">
+                    <li class="nav-item"><a class="nav-link active" href="../pages/inicio.html"><i
+                                class="fa-solid fa-house me-2"></i>Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../pages/clientes.html"><i
+                                class="fa-solid fa-user-group me-2"></i>Clientes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#"><i
+                                class="fa-solid fa-folder-open me-2"></i>Expedientes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#"><i
+                                class="fa-solid fa-calendar-check me-2"></i>Citas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#"><i
+                                class="fa-solid fa-chart-line me-2"></i>Reportes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#"><i
+                                class="fa-regular fa-life-ring me-2"></i>Soporte</a></li>
+                </ul>
+                <div class="mt-auto pt-3 border-top">
+                    <a class="nav-link text-danger" href="../index.html"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar
+                        sesión</a>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <aside class="col-lg-3 col-xl-2 d-none d-lg-flex">
+                <div class="sidebar shadow-sm">
+                    <div class="p-3 d-flex align-items-center gap-2 border-bottom">
+                        <img src="../assets/img/logo.png" alt="Golden Paws" style="height:40px">
+                    </div>
+                    <nav class="sidebar-nav p-3 d-flex flex-column justify-content-between" style="height: 100%;">
+                        <ul class="nav flex-column gap-1">
+                            <li class="nav-item"><a class="nav-link active" href="../pages/inicio.html"><i
+                                        class="fa-solid fa-house me-2"></i>Inicio</a></li>
+                            <li class="nav-item"><a class="nav-link" href="../pages/clientes.html"><i
+                                        class="fa-solid fa-user-group me-2"></i>Clientes</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#"><i
+                                        class="fa-solid fa-folder-open me-2"></i>Expedientes</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#"><i
+                                        class="fa-solid fa-calendar-check me-2"></i>Citas</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#"><i
+                                        class="fa-solid fa-chart-line me-2"></i>Reportes</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#"><i
+                                        class="fa-regular fa-life-ring me-2"></i>Soporte</a></li>
+                        </ul>
+                        <div class="mt-auto pt-3 border-top">
+                            <a class="nav-link text-danger" href="../index.html"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión</a>
+                        </div>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Contenido -->
+            <div class="col-12 col-lg-9 col-xl-10 py-4">
+                <h1>Bienvenido</h1>
+                <h3>Nombre del usuario</h3>
+
+                <div id="carouselPrincipal" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="../assets/img/carrusel-1.jpg" class="d-block w-100" alt="...">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="../assets/img/carrusel-2.jpg" class="d-block w-100" alt="...">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="../assets/img/carrusel-3.jpg" class="d-block w-100" alt="...">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselPrincipal"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselPrincipal"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+
+</body>
+
+</html>
