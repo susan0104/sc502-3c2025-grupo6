@@ -88,3 +88,18 @@ h3 {
     border-color: var(--blue2);
     color: white;
 }
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:focus-visible {
+    background-color: var(--blue2);
+    border-color: var(--blue2);
+    box-shadow: 0 0 0 0.25rem #44929f80;
+    color: white;
+    outline: none !important;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+    box-shadow: 0 0 0 0.2rem rgba(0,83,101,0.3);
+}
+

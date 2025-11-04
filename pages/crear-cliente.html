@@ -96,23 +96,48 @@
 
             <!-- Contenido -->
             <div class="col-12 col-lg-9 col-xl-10 py-4">
-                <h1 class="mb-4 border-bottom">Gestión de Clientes</h1>
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom">
+                    <h1 class="m-0">Creación de Cliente</h1>
+                    <!-- Cuando usemos JS vamos a hacer dinamico el titulo de si es edicion o creación -->
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href = '/pages/clientes.html'">
+                        <i class="fa-solid fa-right-from-bracket me-1"></i>
+                    </button>
+
+                </div>
                 <div class="row">
-                    <div class="col-md-5 col-12 mb-4">
+                    <div class="col-md-6 col-12 mb-4">
                         <label for="nombreCliente" class="form-label">Nombre</label>
                         <input type="text" class="form-control" id="nombreCliente" placeholder="Nombre del Cliente">
                     </div>
-                    <div class="col-md-5 col-12 mb-4">
+                    <div class="col-md-6 col-12 mb-4">
                         <label for="identificacionCliente" class="form-label">Identificación</label>
                         <input type="text" class="form-control" id="identificacionCliente"
                             placeholder="Identificación del Cliente">
                     </div>
-                    <div class="col-md-2 col-12 d-flex align-items-end mb-4">
-                        <button type="button" class="btn btn-primary w-100 me-2">
-                            <i class="fa-solid fa-eraser"></i>
+                    <div class="col-md-6 col-12 mb-4">
+                        <label for="identificacionCliente" class="form-label">Fecha de nacimiento</label>
+                        <input type="date" class="form-control" id="fechaCliente" placeholder="1900-01-01">
+                    </div>
+                    <div class="col-md-6 col-12 mb-4">
+                        <label for="correoCliente" class="form-label">Correo electrónico</label>
+                        <input type="text" class="form-control" id="correoCliente" placeholder="correo@hotmail.com">
+                    </div>
+                    <div class="col-md-6 col-12 mb-4">
+                        <label for="afiliacionCliente" class="form-label">Plan de fidelidad</label>
+                        <select class="form-select" id="afiliacionCliente">
+                            <option selected disabled>Seleccione un plan</option>
+                            <option value="1">Sin plan</option>
+                            <option value="2">Estándar</option>
+                            <option value="3">Avanzado</option>
+                            <option value="4">Premium</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 col-12 d-flex align-items-end mb-4">
+                        <button type="reset" class="btn btn-primary w-100 me-2">
+                            Guardar
                         </button>
-                        <button type="button" class="btn btn-success w-100" onclick="window.location.href = '/pages/crear-cliente.html'">
-                            <i class="fa-solid fa-plus"></i>
+                        <button type="reset" class="btn btn-success w-100">
+                            Agregar mascota
                         </button>
                     </div>
                 </div>
@@ -121,21 +146,24 @@
                     <table class="table table-striped table-hover align-middle">
                         <thead class="">
                             <tr>
-                                <th scope="col" class="color-principal">Identificación</th>
-                                <th scope="col" class="color-principal">Nombre</th>
+                                <th scope="col" class="color-principal">Mascota</th>
+                                <th scope="col" class="color-principal">Edad</th>
                                 <th scope="col" class="text-center color-principal">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>305670981</td>
-                                <td>Juan Pérez</td>
+                                <td>Canela</td>
+                                <td>15 años</td>
                                 <td class="text-center">
                                     <button class="btn btn-warning me-1">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </button>
                                     <button class="btn btn-danger">
                                         <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-primary">
+                                        <i class="fa-solid fa-eye"></i>
                                     </button>
                                 </td>
                             </tr>
