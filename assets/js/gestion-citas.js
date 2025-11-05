@@ -111,3 +111,20 @@ function confirmarEliminacion() {
     modal.hide();
   }
 }
+
+  const preciosServicios = {
+    "Corte de pelo": 10000,
+    "Baño completo": 8000,
+    "Corte y baño": 16000,
+    "Limpieza dental": 12000,
+    "Desparasitación": 6000
+  };
+
+  const servicioSelect = document.getElementById("servicio");
+  const precioInput = document.getElementById("precio");
+
+  servicioSelect.addEventListener("change", function () {
+    const servicioSeleccionado = this.value;
+    const precio = preciosServicios[servicioSeleccionado] || "";
+    precioInput.value = precio;
+  });

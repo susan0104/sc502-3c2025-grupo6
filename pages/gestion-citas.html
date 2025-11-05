@@ -201,12 +201,14 @@
             </div>
             <div class="col-md-2 col-12 mb-3">
               <label class="form-label">Servicio</label>
-              <input
-                type="text"
-                id="servicio"
-                class="form-control"
-                placeholder="Ej: Corte de pelo"
-              />
+              <select id="servicio" class="form-control">
+                <option value="" disabled selected>Selecciona un servicio</option>
+                <option value="Corte de pelo">Corte de pelo</option>
+                <option value="Baño completo">Baño completo</option>
+                <option value="Corte y baño">Corte y baño</option>
+                <option value="Limpieza dental">Limpieza dental</option>
+                <option value="Desparasitación">Desparasitación</option>
+              </select>
             </div>
             <div class="col-md-2 col-12 mb-3">
               <label class="form-label">Fecha</label>
@@ -223,6 +225,7 @@
                 id="precio"
                 class="form-control"
                 placeholder="₡"
+                readonly
               />
             </div>
           </div>
