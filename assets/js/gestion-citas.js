@@ -1,6 +1,7 @@
 let citas = [];
 let citaAEditar = null;
 let citaPendienteEliminar = null;
+const btnAgregar = document.getElementById("btnAgregar");
 const modal = new bootstrap.Modal(document.getElementById("modalAdvertencia"));
 
 document.getElementById("btnAgregar").addEventListener("click", agregarCita);
@@ -32,6 +33,7 @@ function agregarCita() {
     citaAEditar.hora = hora;
     citaAEditar.precio = precio;
     citaAEditar = null;
+    btnAgregar.innerHTML = '<i class="fa-solid fa-plus me-1"></i>Agregar Cita';
   } else {
     citas.push({ cliente, mascota, servicio, fecha, hora, precio });
   }
@@ -77,6 +79,7 @@ function renderizarCitas() {
 }
 
 function editarCita(index) {
+  btnAgregar.innerHTML = 'Editar Cita';
   const cita = citas[index];
   document.getElementById("cliente").value = cita.cliente;
   document.getElementById("mascota").value = cita.mascota;
@@ -91,7 +94,7 @@ function eliminarCita(index) {
   const cita = citas[index];
   const hoy = new Date().toISOString().split("T")[0];
 
-  if (cita.fecha === hoy) {
+  if (cita.fecha == hoy) {
     citaPendienteEliminar = index;
     modal.show();
   } else {
