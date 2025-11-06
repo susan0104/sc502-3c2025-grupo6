@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Mascota</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Agregar Mascota</h1>
+    </header>
+
+    <main>
+        <form id="formMascota" class="formulario">
+            <label for="nombre">Nombre de la mascota:</label>
+            <input type="text" id="nombre" name="nombre" required>
+
+            <label for="tipo">Tipo:</label>
+            <select id="tipo" name="tipo" required>
+                <option value="">Seleccione tipo</option>
+                <option value="Perro">Perro</option>
+                <option value="Gato">Gato</option>
+                <option value="Ave">Ave</option>
+                <option value="Otro">Otro</option>
+            </select>
+
+            <label for="raza">Raza:</label>
+            <input type="text" id="raza" name="raza">
+
+            <label for="edad">Edad:</label>
+            <input type="number" id="edad" name="edad" min="0">
+
+            <label for="observaciones">Observaciones:</label>
+            <textarea id="observaciones" name="observaciones" rows="3"></textarea>
+
+            <button type="submit">Guardar Mascota</button>
+            <button type="button" onclick="window.location.href='crear-cliente.html'">Volver</button>
+        </form>
+    </main>
+
+    <script src="../assets/js/agregar-mascota.js"></script>
+</body>
+</html>
