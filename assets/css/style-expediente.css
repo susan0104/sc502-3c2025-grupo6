@@ -11,16 +11,28 @@ body {
     margin-top: 2rem;
 }
 
+.btn-expediente {
+    background-color: #328686;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    transition: 0.2s;
+}
+.btn-expediente:hover {
+    background-color: #328686;
+}
+
 .foto-mascota {
     width: 220px;
     height: 220px;
     object-fit: cover;
     border-radius: 12px;
-    border: 3px solid #f0b94b;
+    border: 3px solid #328686;
 }
 
 .btn-volver {
-    background-color: #f0b94b;
+    background-color: #328686;
     color: white;
     border: none;
     border-radius: 8px;
@@ -29,33 +41,6 @@ body {
 }
 
 .btn-volver:hover {
-    background-color: #d8a939;
+    background-color: #328686;
 }
 
-.card-expediente {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    padding: 2rem;
-    margin-top: 2rem;
-}
-
-
-
-.titulo-seccion {
-    font-weight: 600;
-    color: #f0b94b;
-}
-
-.btn-volver {
-    background-color: #f0b94b;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 0.6rem 1.2rem;
-    transition: 0.2s;
-}
-
-.btn-volver:hover {
-    background-color: #d8a939;
-}
