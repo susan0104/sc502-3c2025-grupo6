@@ -1,32 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Veterinaria Golden Paws</title>
+    <title>Gestión de Citas | Veterinaria Golden Paws</title>
     <link rel="icon" type="image/x-icon" href="../favicon.ico" />
-    <!-- Google fonts CDN -->
+    <!-- Google Fonts -->
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
     />
-    <!-- Bootstrap CDN -->
+    <!-- Bootstrap -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
       crossorigin="anonymous"
     />
-    <!-- Font Awesome CDN -->
+    <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
     />
-    <link rel="stylesheet" href="../assets/css/style-inicio.css" />
     <link rel="stylesheet" href="../assets/css/style-layout.css" />
+    <link rel="stylesheet" href="../assets/css/style-gestion-citas.css" />
   </head>
 
   <body>
+    <!-- Navbar y sidebar igual que en tu versión original -->
     <nav class="navbar bg-white shadow-sm d-lg-none">
       <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center gap-2" href="#">
@@ -49,6 +50,7 @@
       </div>
     </nav>
 
+    <!-- Menú lateral móvil -->
     <div
       class="offcanvas offcanvas-start"
       tabindex="-1"
@@ -76,12 +78,12 @@
         >
           <ul class="nav flex-column gap-1">
             <li class="nav-item">
-              <a class="nav-link active" href="./inicio.html"
+              <a class="nav-link" href="../pages/inicio.html"
                 ><i class="fa-solid fa-house me-2"></i>Inicio</a
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="./clientes.html"
+              <a class="nav-link" href="../pages/clientes.html"
                 ><i class="fa-solid fa-user-group me-2"></i>Clientes</a
               >
             </li>
@@ -91,7 +93,7 @@
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="./gestion-citas.html"
+              <a class="nav-link active" href="../pages/gestion-citas.html"
                 ><i class="fa-solid fa-calendar-check me-2"></i>Citas</a
               >
             </li>
@@ -116,6 +118,7 @@
       </div>
     </div>
 
+    <!-- Contenido principal -->
     <div class="container-fluid">
       <div class="row">
         <aside class="col-lg-3 col-xl-2 d-none d-lg-flex">
@@ -133,12 +136,12 @@
             >
               <ul class="nav flex-column gap-1">
                 <li class="nav-item">
-                  <a class="nav-link active" href="./inicio.html"
+                  <a class="nav-link" href="../pages/inicio.html"
                     ><i class="fa-solid fa-house me-2"></i>Inicio</a
                   >
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="./clientes.html"
+                  <a class="nav-link" href="../pages/clientes.html"
                     ><i class="fa-solid fa-user-group me-2"></i>Clientes</a
                   >
                 </li>
@@ -148,7 +151,7 @@
                   >
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="./gestion-citas.html"
+                  <a class="nav-link active" href="../pages/gestion-citas.html"
                     ><i class="fa-solid fa-calendar-check me-2"></i>Citas</a
                   >
                 </li>
@@ -173,61 +176,131 @@
           </div>
         </aside>
 
+        <!-- Sección principal -->
         <div class="col-12 col-lg-9 col-xl-10 py-4">
-          <h1>Bienvenido</h1>
-          <h3>Nombre del usuario</h3>
+          <h1 class="mb-4 border-bottom">Gestión de Citas</h1>
 
-          <div
-            id="carouselPrincipal"
-            class="carousel slide"
-            data-bs-ride="carousel"
-          >
-            <div class="carousel-inner">
-              <div class="carousel-item active">
-                <img
-                  src="../assets/img/carrusel-1.jpg"
-                  class="d-block w-100"
-                  alt="..."
-                />
-              </div>
-              <div class="carousel-item">
-                <img
-                  src="../assets/img/carrusel-2.jpg"
-                  class="d-block w-100"
-                  alt="..."
-                />
-              </div>
-              <div class="carousel-item">
-                <img
-                  src="../assets/img/carrusel-3.jpg"
-                  class="d-block w-100"
-                  alt="..."
-                />
-              </div>
+          <div class="row">
+            <div class="col-md-2 col-12 mb-3">
+              <label class="form-label">Cliente</label>
+              <input
+                type="text"
+                id="cliente"
+                class="form-control"
+                placeholder="Nombre del cliente"
+              />
             </div>
-            <button
-              class="carousel-control-prev"
-              type="button"
-              data-bs-target="#carouselPrincipal"
-              data-bs-slide="prev"
+            <div class="col-md-2 col-12 mb-3">
+              <label class="form-label">Mascota</label>
+              <input
+                type="text"
+                id="mascota"
+                class="form-control"
+                placeholder="Nombre de la mascota"
+              />
+            </div>
+            <div class="col-md-2 col-12 mb-3">
+              <label class="form-label">Servicio</label>
+              <select id="servicio" class="form-control">
+                <option value="" disabled selected>Selecciona un servicio</option>
+                <option value="Corte de pelo">Corte de pelo</option>
+                <option value="Baño completo">Baño completo</option>
+                <option value="Corte y baño">Corte y baño</option>
+                <option value="Limpieza dental">Limpieza dental</option>
+                <option value="Desparasitación">Desparasitación</option>
+              </select>
+            </div>
+            <div class="col-md-2 col-12 mb-3">
+              <label class="form-label">Fecha</label>
+              <input type="date" id="fecha" class="form-control" />
+            </div>
+            <div class="col-md-2 col-12 mb-3">
+              <label class="form-label">Hora</label>
+              <input type="time" id="hora" class="form-control" />
+            </div>
+            <div class="col-md-2 col-12 mb-3">
+              <label class="form-label">Precio</label>
+              <input
+                type="number"
+                id="precio"
+                class="form-control"
+                placeholder="₡"
+                readonly
+              />
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <button class="btn btn-success" id="btnAgregar">
+              <i class="fa-solid fa-plus me-1"></i>Agregar Cita
+            </button>
+            <button class="btn btn-secondary" id="btnLimpiar">
+              <i class="fa-solid fa-eraser me-1"></i>Limpiar
+            </button>
+          </div>
+
+          <div class="table-responsive mt-4">
+            <table
+              class="table table-striped table-hover align-middle"
+              id="tablaCitas"
             >
-              <span
-                class="carousel-control-prev-icon"
-                aria-hidden="true"
-              ></span>
-              <span class="visually-hidden">Previous</span>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Mascota</th>
+                  <th>Servicio</th>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Precio</th>
+                  <th class="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="modalAdvertencia"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-warning">
+              <i class="fa-solid fa-triangle-exclamation me-2"></i>Advertencia
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>
+              ⚠️ Al cancelar la cita el mismo día, recuerde al usuario que se le cobrará el
+              <strong>50% del valor</strong> de la cita.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
             </button>
             <button
-              class="carousel-control-next"
               type="button"
-              data-bs-target="#carouselPrincipal"
-              data-bs-slide="next"
+              class="btn btn-danger"
+              id="btnConfirmarCancelacion"
             >
-              <span
-                class="carousel-control-next-icon"
-                aria-hidden="true"
-              ></span>
-              <span class="visually-hidden">Next</span>
+              Cancelar igualmente
             </button>
           </div>
         </div>
@@ -239,5 +312,6 @@
       integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
       crossorigin="anonymous"
     ></script>
+    <script src="../assets/js/gestion-citas.js"></script>
   </body>
 </html>
