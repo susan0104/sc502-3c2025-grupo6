@@ -1,0 +1,44 @@
+#btnGuardar,
+#btnCancelarEdicion {
+  height: 42px;
+  font-weight: 500;
+}
+
+.table th {
+  color: var(--color-principal);
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
+#tablaCitas button {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alerta-dia {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 15px;
+}
+
+#tablaCitas td,
+#tablaCitas th {
+  vertical-align: middle;
+}
+
+.modal-content {
+  border-radius: 10px;
+}
+
+.modal-title {
+  font-weight: 600;
+}
