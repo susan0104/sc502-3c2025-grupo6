@@ -12,9 +12,5 @@ document.getElementById("formMascota").addEventListener("submit", function (e) {
     console.log("Mascota guardada:", mascota);
     alert("Mascota registrada correctamente ");
 
-    // Aquí podrías guardar los datos en localStorage o en tu backend
-    // localStorage.setItem("mascota", JSON.stringify(mascota));
-
-    // Regresar a la creación de cliente
     window.location.href = "crear-cliente.html";
 });
