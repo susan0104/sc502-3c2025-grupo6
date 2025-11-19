@@ -49,8 +49,8 @@ CREATE TABLE empleados (
   id_empleado INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,
   cargo VARCHAR(80),
-  telefono VARCHAR(20),
-  correo VARCHAR(100)
+  correo VARCHAR(100) unique,
+  contrasena VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE citas (
