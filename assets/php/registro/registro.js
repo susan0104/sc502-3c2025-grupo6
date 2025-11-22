@@ -37,7 +37,6 @@ document
 
     try {
       const response = await fetch("../assets/php/registro/registro.php", {
-        // corregir la ruta
         method: "POST",
         body: datos,
       });
@@ -47,7 +46,7 @@ document
       if (result.includes("ok")) {
         Toast.fire({
           icon: "success",
-          title: result,
+          title: "Nueva cuenta creada correctamente",
         });
 
         setTimeout(() => {
