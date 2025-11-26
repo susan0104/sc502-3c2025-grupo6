@@ -6,12 +6,19 @@ error_reporting(E_ALL);
 include '../assets/php/conexionBD.php';
 
 $mysqli = abrirConexion();
-$resultado = $mysqli->query("SELECT nombre, precio FROM servicios");
+$servicios = $mysqli->query("SELECT id_servicio, nombre, precio FROM servicios");
 
+// Cargamos servicios (para el select) y las citas con los datos relacionados usando JOINs
+$citas = $mysqli->query(
+  "SELECT c.id_cita, c.id_mascota, c.id_servicio, DATE(c.fecha) AS fecha, TIME(c.fecha) AS hora, "
+  . "s.nombre AS servicio, s.precio AS precio, m.nombre AS mascota, u.nombre AS cliente "
+  . "FROM citas c "
+  . "LEFT JOIN mascotas m ON c.id_mascota = m.id_mascota "
+  . "LEFT JOIN usuarios u ON m.id_usuario = u.id_usuario "
+  . "LEFT JOIN servicios s ON c.id_servicio = s.id_servicio"
+);
 // TODO: Dropdown de clientes
 // TODO: Dropdown de mascotas según cliente seleccionado
-
-cerrarConexion($mysqli);
 ?>
 
 <!DOCTYPE html>
@@ -144,7 +151,7 @@ cerrarConexion($mysqli);
               <option value="" disabled selected>
                 Selecciona un servicio
               </option>
-              <?php while ($fila = $resultado->fetch_assoc()): ?>
+              <?php while ($fila = $servicios->fetch_assoc()): ?>
                 <option value="<?php echo $fila['nombre']; ?>" data-precio="<?= htmlspecialchars($fila['precio']) ?>">
                   <?= htmlspecialchars($fila['nombre']) ?>
                 </option>
@@ -187,7 +194,29 @@ cerrarConexion($mysqli);
                 <th class="text-center">Acciones</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+              <?php while ($fila = $citas->fetch_assoc()): ?>
+                <tr>
+                  <td><?php echo htmlspecialchars($fila["cliente"]) ?></td>
+                  <td><?php echo htmlspecialchars($fila["mascota"]) ?></td>
+                  <td><?php echo htmlspecialchars($fila["servicio"]) ?></td>
+                  <td><?php echo htmlspecialchars($fila["fecha"]) ?></td>
+                  <td><?php echo htmlspecialchars($fila["hora"]) ?></td>
+                  <td>₡<?php echo htmlspecialchars($fila["precio"]) ?></td>
+                  <td class="text-center">
+                    <button class="btn btn-warning btn-sm me-1"
+                      onclick="editarCita(<?= htmlspecialchars($fila['id_cita']) ?>)">
+                      <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button class="btn btn-danger btn-sm"
+                      onclick="eliminarCita(<?= htmlspecialchars($fila['id_cita']) ?>)">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              <?php endwhile; ?>
+              <?php cerrarConexion($mysqli); ?>
+            </tbody>
           </table>
         </div>
       </div>
