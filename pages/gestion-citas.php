@@ -7,8 +7,6 @@ include '../assets/php/conexionBD.php';
 
 $mysqli = abrirConexion();
 $servicios = $mysqli->query("SELECT id_servicio, nombre, precio FROM servicios");
-
-// Cargamos servicios (para el select) y las citas con los datos relacionados usando JOINs
 $citas = $mysqli->query(
   "SELECT c.id_cita, c.id_mascota, c.id_servicio, DATE(c.fecha) AS fecha, TIME(c.fecha) AS hora, "
   . "s.nombre AS servicio, s.precio AS precio, m.nombre AS mascota, u.nombre AS cliente "
@@ -17,8 +15,22 @@ $citas = $mysqli->query(
   . "LEFT JOIN usuarios u ON m.id_usuario = u.id_usuario "
   . "LEFT JOIN servicios s ON c.id_servicio = s.id_servicio"
 );
-// TODO: Dropdown de clientes
-// TODO: Dropdown de mascotas según cliente seleccionado
+$clientes = $mysqli->query("SELECT id_usuario, nombre FROM usuarios");
+$usuario = isset($_GET['cliente']) ? htmlspecialchars($_GET['cliente']) : '';
+
+function obtenerMascotasUsuario($nombreUsuario, $mysqli)
+{
+  if (empty($nombreUsuario)) {
+    return null;
+  }
+  $query = "SELECT m.id_mascota, m.nombre FROM mascotas m 
+            INNER JOIN usuarios u ON m.id_usuario = u.id_usuario 
+            WHERE u.nombre = ?";
+  $stmt = $mysqli->prepare($query);
+  $stmt->bind_param('s', $nombreUsuario);
+  $stmt->execute();
+  return $stmt->get_result();
+}
 ?>
 
 <!DOCTYPE html>
@@ -126,8 +138,7 @@ $citas = $mysqli->query(
             </ul>
             <div class="mt-auto pt-3 border-top">
               <a class="nav-link text-danger" href="../index.html"><i
-                  class="fa-solid fa-right-from-bracket me-2"></i>Cerrar
-                sesión</a>
+                  class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión</a>
             </div>
           </nav>
         </div>
@@ -139,11 +150,46 @@ $citas = $mysqli->query(
         <div class="row">
           <div class="col-md-2 col-12 mb-3">
             <label class="form-label">Cliente</label>
-            <input type="text" id="cliente" class="form-control" placeholder="Nombre del cliente" />
+            <select id="cliente" class="form-control"
+              onchange="window.location.href='gestion-citas.php?cliente=' + encodeURIComponent(this.value);">
+              <option value="" disabled selected>
+                Selecciona un cliente
+              </option>
+              <?php
+              $clientes->data_seek(0);
+              while ($fila = $clientes->fetch_assoc()):
+                ?>
+                <option value="<?php echo htmlspecialchars($fila['nombre']); ?>" <?= ($usuario === $fila['nombre']) ? 'selected' : '' ?>>
+                  <?= htmlspecialchars($fila['nombre']) ?>
+                </option>
+              <?php endwhile; ?>
+            </select>
           </div>
           <div class="col-md-2 col-12 mb-3">
             <label class="form-label">Mascota</label>
-            <input type="text" id="mascota" class="form-control" placeholder="Nombre de la mascota" />
+            <?php if ($usuario == ''): ?>
+              <input type="text" id="mascota" class="form-control" value="Selecciona un cliente" disabled />
+            <?php else: ?>
+              <select id="mascota" class="form-control">
+                <option value="" disabled selected>
+                  Selecciona una mascota
+                </option>
+                <?php
+                $mascotas = obtenerMascotasUsuario($usuario, $mysqli);
+                if ($mascotas && $mascotas->num_rows > 0):
+                  while ($mascota = $mascotas->fetch_assoc()):
+                    ?>
+                    <option value="<?= htmlspecialchars($mascota['id_mascota']) ?>">
+                      <?= htmlspecialchars($mascota['nombre']) ?>
+                    </option>
+                    <?php
+                  endwhile;
+                else:
+                  ?>
+                  <option disabled>No hay mascotas para este usuario</option>
+                <?php endif; ?>
+              </select>
+            <?php endif; ?>
           </div>
           <div class="col-md-2 col-12 mb-3">
             <label class="form-label">Servicio</label>
