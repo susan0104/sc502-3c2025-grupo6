@@ -52,7 +52,6 @@ async function agregarCita() {
     citaAEditar = null;
     btnAgregar.innerHTML = '<i class="fa-solid fa-plus me-1"></i>Agregar Cita';
   } else {
-    //Todo: guardar la cita en la base de datos
     const formData = new FormData();
     formData.append("cliente", cliente);
     formData.append("mascota", mascota);
@@ -61,19 +60,45 @@ async function agregarCita() {
     formData.append("hora", hora);
     formData.append("precio", precio);
 
-    const response = await fetch(
-      "/Proyecto%20final%20-%20Ambiente%20Web/sc502-3c2025-grupo6/assets/php/agregar_cita.php",
-      {
+    try {
+      const response = await fetch("../assets/php/citas/agregar_cita.php", {
         method: "POST",
         body: formData,
+      });
+
+      if (!response.ok) {
+        Toast.fire({
+          icon: "error",
+          title: "Error de conexión",
+        });
+        return;
       }
-    );
 
-    console.log(response);
+      const data = await response.text();
+      console.log("Respuesta del servidor:", data);
+
+      if (data.success) {
+        Toast.fire({
+          icon: "success",
+          title: data.message || "Cita agregada correctamente",
+        });
+        limpiarFormulario();
+      } else {
+        const mensajeError = data.errors.join("\n");
+        Swal.fire({
+          icon: "error",
+          title: "Error al agregar cita",
+          text: mensajeError,
+        });
+      }
+    } catch (error) {
+      console.log("Error:", error);
+      Toast.fire({
+        icon: "error",
+        title: "Error en la solicitud",
+      });
+    }
   }
-
-  limpiarFormulario();
-  renderizarCitas();
 }
 
 function limpiarFormulario() {
@@ -130,9 +155,4 @@ const inputPrecio = document.getElementById("precio");
 selectServicio.addEventListener("change", function () {
   const precio = this.options[this.selectedIndex].getAttribute("data-precio");
   inputPrecio.value = precio;
-});
-
-document.getElementById("cliente").addEventListener("change", function () {
-  // Recargar la página o actualizar dinámicamente
-  this.form.submit(); // O usar fetch para actualizar solo el select de mascotas
 });
