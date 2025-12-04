@@ -255,7 +255,7 @@ function obtenerMascotasUsuario($nombreUsuario, $mysqli)
                       <i class="fa-solid fa-pen-to-square"></i>
                     </button>
                     <button class="btn btn-danger btn-sm"
-                      onclick="eliminarCita(<?= htmlspecialchars($fila['id_cita']) ?>)">
+                      onclick="eliminarCita(<?= htmlspecialchars($fila['id_cita']) ?>, <?= htmlspecialchars($fila['fecha']) ?>)">
                       <i class="fa-solid fa-trash"></i>
                     </button>
                   </td>
