@@ -74,17 +74,16 @@ async function agregarCita() {
         return;
       }
 
-      const data = await response.text();
-      console.log("Respuesta del servidor:", data);
+      const data = await response.json();
 
-      if (data.success) {
+      if (data.length === 0) {
         Toast.fire({
           icon: "success",
-          title: data.message || "Cita agregada correctamente",
+          title: "Cita agregada correctamente",
         });
         limpiarFormulario();
       } else {
-        const mensajeError = data.errors.join("\n");
+        const mensajeError = data.join("\n");
         Swal.fire({
           icon: "error",
           title: "Error al agregar cita",
