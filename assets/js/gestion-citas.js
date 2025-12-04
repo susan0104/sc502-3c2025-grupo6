@@ -1,4 +1,3 @@
-let citas = [];
 let citaAEditar = null;
 let citaPendienteEliminar = null;
 const btnAgregar = document.getElementById("btnAgregar");
@@ -49,8 +48,58 @@ async function agregarCita() {
     citaAEditar.fecha = fecha;
     citaAEditar.hora = hora;
     citaAEditar.precio = precio;
-    citaAEditar = null;
     btnAgregar.innerHTML = '<i class="fa-solid fa-plus me-1"></i>Agregar Cita';
+
+    const formData = new FormData();
+    formData.append("id_cita", citaAEditar.id);
+    formData.append("cliente", cliente);
+    formData.append("mascota", mascota);
+    formData.append("servicio", servicio);
+    formData.append("fecha", fecha);
+    formData.append("hora", hora);
+    formData.append("estado", citaAEditar.estado);
+    formData.append("precio", precio);
+    citaAEditar = null;
+
+    try {
+      const response = await fetch("../assets/php/citas/actualizar_cita.php", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        Toast.fire({
+          icon: "error",
+          title: "Error de conexión",
+        });
+        return;
+      }
+
+      console.log("Respuesta de actualizar_cita.php:", response);
+      const data = await response.json();
+      console.log("Respuesta de actualizar_cita.php:", data);
+
+      if (data.length === 0) {
+        Toast.fire({
+          icon: "success",
+          title: "Cita actualizada correctamente",
+        });
+        limpiarFormulario();
+      } else {
+        const mensajeError = data.join("\n");
+        Swal.fire({
+          icon: "error",
+          title: "Error al actualizar cita",
+          text: mensajeError,
+        });
+      }
+    } catch (error) {
+      console.log("Error:", error);
+      Toast.fire({
+        icon: "error",
+        title: "Error en la solicitud",
+      });
+    }
   } else {
     const formData = new FormData();
     formData.append("cliente", cliente);
@@ -109,42 +158,156 @@ function limpiarFormulario() {
   document.getElementById("hora").value = "";
   document.getElementById("precio").value = "";
   citaAEditar = null;
+  btnAgregar.innerHTML = '<i class="fa-solid fa-plus me-1"></i>Agregar Cita';
 }
 
-function editarCita(index) {
-  btnAgregar.innerHTML = "Editar Cita";
-  const cita = citas[index];
-  //Todo: editar la cita en la base de datos
-  document.getElementById("cliente").value = cita.cliente;
-  document.getElementById("mascota").value = cita.mascota;
-  document.getElementById("servicio").value = cita.servicio;
-  document.getElementById("fecha").value = cita.fecha;
-  document.getElementById("hora").value = cita.hora;
-  document.getElementById("precio").value = cita.precio;
-  citaAEditar = cita;
-}
+async function editarCita(index) {
+  btnAgregar.innerHTML = '<i class="fa-solid fa-pencil me-1"></i>Editar Cita';
 
-function eliminarCita(index) {
-  const cita = citas[index];
-  const hoy = new Date().toISOString().split("T")[0];
+  try {
+    const formData = new FormData();
+    formData.append("index", index);
 
-  if (cita.fecha == hoy) {
-    citaPendienteEliminar = index;
-    modal.show();
-  } else {
-    //Todo: eliminar la cita de la base de datos
-    citas.splice(index, 1);
-    renderizarCitas();
+    const response = await fetch("../assets/php/citas/obtener_cita.php", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      Swal.fire({
+        icon: "error",
+        title: "Error de conexión",
+      });
+      return;
+    }
+
+    const data = await response.json();
+
+    if (data.errors) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: data.errors.join("\n"),
+      });
+      return;
+    }
+
+    const cita = data.cita;
+
+    document.getElementById("cliente").value = cita.cliente;
+    document.getElementById("cliente").disabled = true;
+    document.getElementById("mascota").value = cita.mascota;
+    document.getElementById("servicio").value = cita.servicio;
+    document.getElementById("fecha").value = cita.fecha;
+    document.getElementById("hora").value = cita.hora;
+    document.getElementById("precio").value = cita.precio;
+
+    citaAEditar = { id: index, ...cita };
+  } catch (error) {
+    console.log("Error:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error en la solicitud",
+    });
   }
 }
 
-function confirmarEliminacion() {
+async function eliminarCita(index, fecha) {
+  const hoy = new Date().toISOString().split("T")[0];
+
+  if (fecha === hoy) {
+    citaPendienteEliminar = index;
+    modal.show();
+    return;
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append("id_cita", index);
+
+    const response = await fetch("../assets/php/citas/eliminar_cita.php", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      Swal.fire({
+        icon: "error",
+        title: "Error de conexión",
+      });
+      return;
+    }
+
+    const data = await response.json();
+
+    if (data.length === 0) {
+      Swal.fire({
+        icon: "success",
+        title: "Cita eliminada correctamente",
+      });
+      limpiarFormulario();
+    } else {
+      const mensajeError = data.join("\n");
+      Swal.fire({
+        icon: "error",
+        title: "Error al eliminar cita",
+        text: mensajeError,
+      });
+    }
+  } catch (error) {
+    console.log("Error:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error en la solicitud",
+    });
+  }
+}
+
+async function confirmarEliminacion() {
   if (citaPendienteEliminar !== null) {
-    //Todo: eliminar la cita de la base de datos
-    citas.splice(citaPendienteEliminar, 1);
-    renderizarCitas();
     citaPendienteEliminar = null;
     modal.hide();
+    try {
+      const formData = new FormData();
+      formData.append("id_cita", citas[index].id);
+      formData.append("fecha", fecha);
+
+      const response = await fetch("../assets/php/citas/eliminar_cita.php", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        Swal.fire({
+          icon: "error",
+          title: "Error de conexión",
+        });
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.length === 0) {
+        Swal.fire({
+          icon: "success",
+          title: "Cita eliminada correctamente",
+        });
+        limpiarFormulario();
+      } else {
+        const mensajeError = data.join("\n");
+        Swal.fire({
+          icon: "error",
+          title: "Error al eliminar cita",
+          text: mensajeError,
+        });
+      }
+    } catch (error) {
+      console.log("Error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error en la solicitud",
+      });
+    }
   }
 }
 
