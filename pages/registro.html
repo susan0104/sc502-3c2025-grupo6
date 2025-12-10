@@ -86,13 +86,20 @@
 
                         <div class="mb-3 text-start">
                           <label for="cargo" class="form-label">Cargo</label>
-                          <input
-                            type="text"
+                          <!-- //Todo: dropdown con opciones predefinidas -->
+                          <select
                             class="form-control"
+                            name="cargo"
                             id="cargo"
-                            placeholder="Veterinario, Asistente, etc."
                             required
-                          />
+                          >
+                            <option value="" disabled selected>
+                              Selecciona un cargo
+                            </option>
+                            <option value="Veterinario">Veterinario</option>
+                            <option value="Secretario">Secretario</option>
+                            <option value="Asistente">Asistente</option>
+                          </select>
                         </div>
 
                         <div class="mb-3 text-start">
