@@ -1,9 +1,14 @@
 <?php
+session_start();
+if (!isset($_SESSION['id'])) {
+    header("Location: ../../index.php");
+    exit();
+}
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-include '../assets/php/conexionBD.php';
+include '../../assets/php/conexionBD.php';
 
 $mysqli = abrirConexion();
 
@@ -42,6 +47,7 @@ function obtenerMascotasCliente($clienteId, $mysqli)
   $stmt->execute();
   return $stmt->get_result();
 }
+$paginaActiva = 'citas';
 ?>
 
 <!DOCTYPE html>
@@ -59,101 +65,13 @@ function obtenerMascotasCliente($clienteId, $mysqli)
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
-  <link rel="stylesheet" href="../assets/css/style-layout.css" />
-  <link rel="stylesheet" href="../assets/css/style-gestion-citas.css" />
+  <link rel="stylesheet" href="../../assets/css/style-layout.css" />
 </head>
 
 <body>
-  <nav class="navbar bg-white shadow-sm d-lg-none">
-    <div class="container-fluid">
-      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-        <img src="../assets/img/logo.png" alt="Golden Paws" style="height: 36px" />
-      </a>
-      <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#MenuMovil"
-        aria-controls="MenuMovil" aria-label="Abrir menú">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-    </div>
-  </nav>
-
-  <div class="offcanvas offcanvas-start" tabindex="-1" id="MenuMovil" aria-labelledby="MenuMovilLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title d-flex align-items-center gap-2" id="MenuMovilLabel">
-        <img src="../assets/img/logo.png" alt="Golden Paws" />
-      </h5>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-    </div>
-    <div class="offcanvas-body p-0">
-      <nav class="sidebar-nav p-3 d-flex flex-column justify-content-between" style="height: 100%">
-        <ul class="nav flex-column gap-1">
-          <li class="nav-item">
-            <a class="nav-link" href="../pages/inicio.html"><i class="fa-solid fa-house me-2"></i>Inicio</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../pages/clientes.html"><i class="fa-solid fa-user-group me-2"></i>Clientes</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../pages/listaExpedientes.html"><i
-                class="fa-solid fa-folder-open me-2"></i>Expedientes</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="../pages/gestion-citas.html"><i
-                class="fa-solid fa-calendar-check me-2"></i>Citas</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fa-solid fa-chart-line me-2"></i>Reportes</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fa-regular fa-life-ring me-2"></i>Soporte</a>
-          </li>
-        </ul>
-        <div class="mt-auto pt-3 border-top">
-          <a class="nav-link text-danger" href="../index.html"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar
-            sesión</a>
-        </div>
-      </nav>
-    </div>
-  </div>
-
   <div class="container-fluid">
     <div class="row">
-      <aside class="col-lg-3 col-xl-2 d-none d-lg-flex">
-        <div class="sidebar shadow-sm">
-          <div class="p-3 d-flex align-items-center gap-2 border-bottom">
-            <img src="../assets/img/logo.png" alt="Golden Paws" style="height: 40px" />
-          </div>
-          <nav class="sidebar-nav p-3 d-flex flex-column justify-content-between" style="height: 100%">
-            <ul class="nav flex-column gap-1">
-              <li class="nav-item">
-                <a class="nav-link" href="../pages/inicio.html"><i class="fa-solid fa-house me-2"></i>Inicio</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="../pages/clientes.html"><i
-                    class="fa-solid fa-user-group me-2"></i>Clientes</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="../pages/listaExpedientes.html"><i
-                    class="fa-solid fa-folder-open me-2"></i>Expedientes</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" href="../pages/gestion-citas.html"><i
-                    class="fa-solid fa-calendar-check me-2"></i>Citas</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fa-solid fa-chart-line me-2"></i>Reportes</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fa-regular fa-life-ring me-2"></i>Soporte</a>
-              </li>
-            </ul>
-            <div class="mt-auto pt-3 border-top">
-              <a class="nav-link text-danger" href="../index.php"><i
-                  class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión</a>
-            </div>
-          </nav>
-        </div>
-      </aside>
-
+      <?php include("../../layout/aside.php"); ?>
       <div class="col-12 col-lg-9 col-xl-10 py-4">
         <h1 class="mb-4 border-bottom">Gestión de Citas</h1>
 
@@ -268,9 +186,6 @@ function obtenerMascotasCliente($clienteId, $mysqli)
                   <td><?php echo htmlspecialchars($fila["hora"]) ?></td>
                   <td>₡<?php echo htmlspecialchars($fila["precio"]) ?></td>
                   <td class="text-center">
-                    <button class="btn btn-warning btn-sm me-1" onclick="editarCita(<?= intval($fila['Cita_Id']) ?>)">
-                      <i class="fa-solid fa-pen-to-square"></i>
-                    </button>
                     <button class="btn btn-danger btn-sm"
                       onclick="eliminarCita(<?= intval($fila['Cita_Id']) ?>, '<?= htmlspecialchars($fila['fecha']) ?>')">
                       <i class="fa-solid fa-trash"></i>
@@ -315,7 +230,7 @@ function obtenerMascotasCliente($clienteId, $mysqli)
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="../assets/js/gestion-citas.js"></script>
+  <script src="./gestion-citas.js"></script>
 </body>
 
 </html>

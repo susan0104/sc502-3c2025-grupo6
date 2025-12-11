@@ -25,6 +25,62 @@ document.getElementById("formMascota").addEventListener("submit", async function
   const observaciones = document.getElementById("observaciones").value.trim();
   const foto = document.getElementById("fotoBase64").value.trim();
 
+
+
+  if (!nombre || !tipo || !raza || edad === "" || !foto) {
+    Toast.fire({
+      icon: "warning",
+      title: "Debe completar todos los campos y subir una foto",
+    });
+    return;
+  }
+
+
+  if (nombre.length < 3 || nombre.length > 150) {
+    Toast.fire({
+      icon: "warning",
+      title: "El nombre debe tener entre 3 y 150 caracteres",
+    });
+    return;
+  }
+
+
+  if (raza.length > 100) {
+    Toast.fire({
+      icon: "warning",
+      title: "La raza no puede exceder 100 caracteres",
+    });
+    return;
+  }
+
+
+  const edadNum = parseInt(edad);
+
+  if (isNaN(edadNum) || edadNum < 0 || edadNum > 30) {
+    Toast.fire({
+      icon: "warning",
+      title: "La edad debe estar entre 0 y 30 años",
+    });
+    return;
+  }
+
+
+  if (observaciones.length > 200) {
+    Toast.fire({
+      icon: "warning",
+      title: "Las observaciones no pueden exceder 200 caracteres",
+    });
+    return;
+  }
+
+  if (!foto || foto.length < 50) {
+    Toast.fire({
+      icon: "warning",
+      title: "Debe subir una fotografía de la mascota",
+    });
+    return;
+  }
+
   const datos = new FormData();
   datos.append("cliente_id", cliente_id);
   datos.append("nombre", nombre);

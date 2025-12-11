@@ -51,7 +51,7 @@ async function agregarCita() {
     citaAEditar = null;
 
     try {
-      const response = await fetch("../assets/php/citas/actualizar_cita.php", {
+      const response = await fetch("../../assets/php/citas/actualizar_cita.php", {
         method: "POST",
         body: formData,
       });
@@ -91,7 +91,7 @@ async function agregarCita() {
     formData.append("precio", precio);
 
     try {
-      const response = await fetch("../assets/php/citas/agregar_cita.php", {
+      const response = await fetch("../../assets/php/citas/agregar_cita.php", {
         method: "POST",
         body: formData,
       });
@@ -139,7 +139,7 @@ async function editarCita(id) {
     const formData = new FormData();
     formData.append("id_cita", id);
 
-    const response = await fetch("../assets/php/citas/obtener_cita.php", {
+    const response = await fetch("../../assets/php/citas/obtener_cita.php", {
       method: "POST",
       body: formData,
     });
@@ -172,6 +172,7 @@ async function editarCita(id) {
 
     citaAEditar = { id: id, ...cita };
   } catch (error) {
+    console.log(error);
     Swal.fire({ icon: "error", title: "Error en la solicitud" });
   }
 }
@@ -189,7 +190,7 @@ async function eliminarCita(id, fecha) {
     const formData = new FormData();
     formData.append("id_cita", id);
 
-    const response = await fetch("../assets/php/citas/eliminar_cita.php", {
+    const response = await fetch("../../assets/php/citas/eliminar_cita.php", {
       method: "POST",
       body: formData,
     });
@@ -226,7 +227,7 @@ async function confirmarEliminacion() {
       const formData = new FormData();
       formData.append("id_cita", id);
 
-      const response = await fetch("../assets/php/citas/eliminar_cita.php", {
+      const response = await fetch("../../assets/php/citas/eliminar_cita.php", {
         method: "POST",
         body: formData,
       });

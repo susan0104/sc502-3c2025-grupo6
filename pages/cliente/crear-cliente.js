@@ -32,6 +32,50 @@ document
     }
 
 
+    if (nombre.length < 3 || nombre.length > 150) {
+        Toast.fire({
+            icon: "warning",
+            title: "El nombre debe tener entre 3 y 150 caracteres",
+        });
+        return;
+    }
+
+
+    if (identificacion.length > 20) {
+        Toast.fire({
+            icon: "warning",
+            title: "La identificación no puede exceder 20 caracteres",
+        });
+        return;
+    }
+
+
+    const nacimiento = new Date(fecha);
+    const hoy = new Date();
+    const edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const ajusteMes = hoy.getMonth() - nacimiento.getMonth();
+    const esMenor =
+        edad < 18 || (edad === 18 && ajusteMes < 0) || 
+        (edad === 18 && ajusteMes === 0 && hoy.getDate() < nacimiento.getDate());
+
+    if (esMenor) {
+        Toast.fire({
+            icon: "warning",
+            title: "El cliente debe ser mayor de 18 años",
+        });
+        return;
+    }
+
+
+    if (correo.length > 100) {
+        Toast.fire({
+            icon: "warning",
+            title: "El correo no puede exceder 100 caracteres",
+        });
+        return;
+    }
+
+
     const datos = new FormData();
     datos.append("nombre", nombre);
     datos.append("identificacion", identificacion);
