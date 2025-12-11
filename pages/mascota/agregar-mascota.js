@@ -1,80 +1,54 @@
-document
-  .getElementById("formMascota")
-  .addEventListener("submit", async function (e) {
-    e.preventDefault();
+document.getElementById("foto").addEventListener("change", function () {
+  const file = this.files[0];
+  if (!file) {
+    document.getElementById("fotoBase64").value = "";
+    return;
+  }
 
-    const cliente_id   = document.getElementById("cliente_id").value.trim();
-    const nombre       = document.getElementById("nombre").value.trim();
-    const tipo         = document.getElementById("tipo").value.trim();
-    const raza         = document.getElementById("raza").value.trim();
-    const edad         = document.getElementById("edad").value.trim();
-    const observaciones= document.getElementById("observaciones").value.trim();
+  const reader = new FileReader();
 
-    const Toast = Swal.mixin({
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      background: "#fff",
-      color: "#000",
-      didOpen: (toast) => {
-        toast.addEventListener("mouseenter", Swal.stopTimer);
-        toast.addEventListener("mouseleave", Swal.resumeTimer);
-      },
-    });
+  reader.onloadend = function () {
+    document.getElementById("fotoBase64").value = reader.result;
+  };
 
-    if (!cliente_id || !nombre || !tipo || !raza || !edad) {
-      Toast.fire({
-        icon: "warning",
-        title: "Debe completar el nombre, el tipo, la raza y la edad",
-      });
-      return;
-    }
+  reader.readAsDataURL(file);
+});
 
-    const datos = new FormData();
-    datos.append("cliente_id", cliente_id);
-    datos.append("nombre", nombre);
-    datos.append("tipo", tipo);
-    datos.append("raza", raza);
-    datos.append("edad", edad);
-    datos.append("observaciones", observaciones);
+document.getElementById("formMascota").addEventListener("submit", async function (e) {
+  e.preventDefault();
 
-    try {
-      const response = await fetch("agregarmascota-service.php", {
-        method: "POST",
-        body: datos,
-      });
+  const cliente_id = document.getElementById("cliente_id").value.trim();
+  const nombre = document.getElementById("nombre").value.trim();
+  const tipo = document.getElementById("tipo").value.trim();
+  const raza = document.getElementById("raza").value.trim();
+  const edad = document.getElementById("edad").value.trim();
+  const observaciones = document.getElementById("observaciones").value.trim();
+  const foto = document.getElementById("fotoBase64").value.trim();
 
-      const result = await response.text();
+  const datos = new FormData();
+  datos.append("cliente_id", cliente_id);
+  datos.append("nombre", nombre);
+  datos.append("tipo", tipo);
+  datos.append("raza", raza);
+  datos.append("edad", edad);
+  datos.append("observaciones", observaciones);
+  datos.append("fotoBase64", foto);
 
-      if (result.includes("ok")) {
-        Toast.fire({
-          icon: "success",
-          title: "Mascota registrada correctamente",
-        });
-
-        setTimeout(() => {
-          window.location.href = "../cliente/editar-cliente.php?id=" + cliente_id;
-        }, 1500);
-
-      } else if (result.includes("error:")) {
-        Toast.fire({
-          icon: "error",
-          title: result.replace("error:", "").trim(),
-        });
-      } else {
-        Toast.fire({
-          icon: "error",
-          title: "Error inesperado: " + result,
-        });
-      }
-
-    } catch (error) {
-      console.log(error);
-      Toast.fire({
-        icon: "error",
-        title: "Error de conexión con el servidor",
-      });
-    }
+  const response = await fetch("agregarmascota-service.php", {
+    method: "POST",
+    body: datos,
   });
+
+  const result = await response.text();
+  console.log("Respuesta del servidor:", result);
+
+  if (result.includes("ok")) {
+    Swal.fire("Éxito", "Mascota registrada correctamente", "success");
+    setTimeout(() => {
+      window.location.href = "../cliente/editar-cliente.php?id=" + cliente_id;
+    }, 1200);
+
+  } else {
+    Swal.fire("Error", result, "error");
+  }
+});

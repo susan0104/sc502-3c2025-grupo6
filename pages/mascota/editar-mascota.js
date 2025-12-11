@@ -1,3 +1,19 @@
+document.getElementById("foto").addEventListener("change", function () {
+  const file = this.files[0];
+  if (!file) {
+    document.getElementById("fotoBase64").value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onloadend = function () {
+    document.getElementById("fotoBase64").value = reader.result;
+  };
+
+  reader.readAsDataURL(file);
+});
+
 document
   .getElementById("formEditarMascota")
   .addEventListener("submit", async function (e) {
@@ -9,6 +25,7 @@ document
     const raza         = document.getElementById("raza").value.trim();
     const edad         = document.getElementById("edad").value.trim();
     const observaciones= document.getElementById("observaciones").value.trim();
+    const foto = document.getElementById("fotoBase64").value.trim();
 
     const Toast = Swal.mixin({
       toast: true,
@@ -27,7 +44,7 @@ document
     if (!mascota_id || !nombre || !tipo || !raza || !edad) {
       Toast.fire({
         icon: "warning",
-        title: "Debe completar nombre, especie, raza y edad",
+        title: "Debe completar nombre, especie, raza, edad",
       });
       return;
     }
@@ -39,6 +56,7 @@ document
     datos.append("raza", raza);
     datos.append("edad", edad);
     datos.append("observaciones", observaciones);
+    datos.append("fotoBase64", foto);
 
     try {
       const response = await fetch("editarmascota-service.php", {
@@ -71,7 +89,6 @@ document
       }
 
     } catch (error) {
-      console.log(error);
       Toast.fire({
         icon: "error",
         title: "Error de conexión con el servidor",

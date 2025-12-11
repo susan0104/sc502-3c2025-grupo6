@@ -23,10 +23,13 @@ $cliente_id = intval($_GET['cliente_id']);
 
 $conexion = abrirConexion();
 
-$sql = "DELETE FROM Mascota WHERE Mascota_Id = ?";
+$sql = "DELETE FROM MascotaExpediente WHERE Mascota_Id = ?";
 $stmt = $conexion->prepare($sql);
 
-if (!$stmt) {
+$sql2 = "DELETE FROM Mascota WHERE Mascota_Id = ?";
+$stmt2 = $conexion->prepare($sql2);
+
+if (!$stmt && !$stmt2) {
     cerrarConexion($conexion);
     header("Location: ../cliente/editar-cliente.php?id=$cliente_id&error=prepare");
     exit();
@@ -36,6 +39,11 @@ $stmt->bind_param("i", $mascota_id);
 $stmt->execute();
 
 $stmt->close();
+
+$stmt2->bind_param("i", $mascota_id);
+$stmt2->execute();
+
+$stmt2->close();
 cerrarConexion($conexion);
 
 header("Location: ../cliente/editar-cliente.php?id=$cliente_id&eliminado=1");

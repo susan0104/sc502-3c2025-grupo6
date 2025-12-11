@@ -37,7 +37,7 @@ cerrarConexion($mysqli);
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Veterinaria Golden Paws</title>
 
-    <link rel="icon" type="image/x-icon" href="../favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico" />
 
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" />
@@ -57,7 +57,8 @@ cerrarConexion($mysqli);
                 <div class="d-flex justify-content-between align-items-center mb-4 border-bottom">
                     <h1 class="m-0">Creación de Mascota</h1>
 
-                    <button type="button" class="btn btn-secondary" onclick="window.location.href = '../cliente/clientes.php'">
+                    <button type="button" class="btn btn-secondary"
+                        onclick="window.location.href = '../cliente/clientes.php'">
                         <i class="fa-solid fa-right-from-bracket me-1"></i>
                     </button>
                 </div>
@@ -76,22 +77,27 @@ cerrarConexion($mysqli);
                             <select class="form-select" id="tipo" name="tipo" required>
                                 <option value="" disabled selected>Seleccione una especie</option>
                                 <?php foreach ($especies as $especie): ?>
-                                    <option value="<?= $especie['Especie_Id'] ?>">
-                                        <?= $especie['Nombre'] ?>
-                                    </option>
+                                    <option value="<?= $especie['Especie_Id'] ?>"><?= $especie['Nombre'] ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
 
-                        <div class="col-md-6 mb-4">
+                        <div class="col-md-4 mb-4">
                             <label class="form-label">Raza</label>
                             <input type="text" class="form-control" id="raza" name="raza">
                         </div>
 
-                        <div class="col-md-6 mb-4">
+                        <div class="col-md-4 mb-4">
                             <label class="form-label">Edad</label>
                             <input type="number" class="form-control" id="edad" name="edad" min="0">
                         </div>
+
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">Foto de la mascota</label>
+                            <input type="file" class="form-control" id="foto" accept="image/*">
+                        </div>
+
+                        <input type="hidden" id="fotoBase64" name="fotoBase64">
 
                         <div class="col-12 mb-4">
                             <label class="form-label">Observaciones</label>
@@ -113,6 +119,7 @@ cerrarConexion($mysqli);
 
                     </div>
                 </form>
+
             </div>
         </div>
     </div>

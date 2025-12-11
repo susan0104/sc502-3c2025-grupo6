@@ -69,11 +69,11 @@ cerrarConexion($conexion);
               placeholder="Identificación del Cliente" />
           </div>
           <div class="col-md-2 col-12 d-flex align-items-end mb-4">
-            <button type="button" class="btn btn-primary w-100 me-2">
+            <button type="button" class="btn btn-primary w-100 me-2" id="btnLimpiar">
               <i class="fa-solid fa-eraser"></i>
             </button>
-            <button type="button" class="btn btn-success w-100"
-              onclick="window.location.href = 'crear-cliente.php'">
+
+            <button type="button" class="btn btn-success w-100" onclick="window.location.href = 'crear-cliente.php'">
               <i class="fa-solid fa-plus"></i>
             </button>
           </div>
@@ -94,19 +94,17 @@ cerrarConexion($conexion);
             <tbody>
               <?php if (!empty($clientes)): ?>
                 <?php foreach ($clientes as $cliente): ?>
-                  <tr>
+                  <tr class="fila-cliente" data-nombre="<?= strtolower($cliente['Nombre']) ?>"
+                    data-id="<?= strtolower($cliente['Identificacion']) ?>">
                     <td><?= htmlspecialchars($cliente['Identificacion']) ?></td>
                     <td><?= htmlspecialchars($cliente['Nombre']) ?></td>
                     <td><?= htmlspecialchars($cliente['Plan']) ?></td>
                     <td class="text-center">
-                      <button 
-                        class="btn btn-warning me-1"
-                        onclick="window.location.href='editar-cliente.php?id=<?= $cliente['Cliente_Id'] ?>'">
+                      <button class="btn btn-warning me-1"
+                        onclick="window.location.href='./editar-cliente.php?id=<?= $cliente['Cliente_Id'] ?>'">
                         <i class="fa-solid fa-pen-to-square"></i>
                       </button>
-                      <button 
-                        class="btn btn-danger"
-                        onclick="eliminar(<?= $cliente['Cliente_Id'] ?>)">
+                      <button class="btn btn-danger" onclick="eliminar(<?= $cliente['Cliente_Id'] ?>)">
                         <i class="fa-solid fa-trash"></i>
                       </button>
                     </td>
@@ -114,7 +112,7 @@ cerrarConexion($conexion);
                 <?php endforeach; ?>
               <?php else: ?>
                 <tr>
-                  <td colspan="3" class="text-center text-muted">
+                  <td colspan="4" class="text-center text-muted">
                     No hay clientes registrados
                   </td>
                 </tr>
@@ -147,6 +145,39 @@ cerrarConexion($conexion);
         }
       });
     }
+    document.addEventListener("DOMContentLoaded", () => {
+
+      const inputNombre = document.getElementById("nombreCliente");
+      const inputId = document.getElementById("identificacionCliente");
+      const filas = document.querySelectorAll(".fila-cliente");
+
+      function filtrar() {
+        const filtroNombre = inputNombre.value.toLowerCase();
+        const filtroId = inputId.value.toLowerCase();
+
+        filas.forEach(fila => {
+          const nombre = fila.dataset.nombre;
+          const identificacion = fila.dataset.id;
+
+          const coincideNombre = nombre.includes(filtroNombre);
+          const coincideId = identificacion.includes(filtroId);
+
+          fila.style.display = (coincideNombre && coincideId) ? "" : "none";
+        });
+      }
+
+      inputNombre.addEventListener("input", filtrar);
+      inputId.addEventListener("input", filtrar);
+
+      btnLimpiar.addEventListener("click", () => {
+        inputNombre.value = "";
+        inputId.value = "";
+
+        filas.forEach(fila => fila.style.display = "");
+
+      });
+
+    });
   </script>
 </body>
 

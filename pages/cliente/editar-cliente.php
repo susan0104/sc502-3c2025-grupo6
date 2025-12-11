@@ -164,7 +164,7 @@ cerrarConexion($mysqli);
                             <button type="submit" class="btn btn-primary w-100">
                                 Guardar Cambios
                             </button>
-                            <button type="button" class="btn btn-outline-secondary w-100"
+                            <button type="button" class="btn btn-secondary w-100"
                                 onclick="window.location.href='../mascota/agregar-mascota.php?cliente_id=<?= $cliente['Cliente_Id'] ?>'">
                                 Agregar Mascota
                             </button>
@@ -202,9 +202,11 @@ cerrarConexion($mysqli);
                                                 <i class="fa-solid fa-trash"></i>
                                             </button>
 
-                                            <button class="btn btn-primary">
+                                            <button class="btn btn-primary"
+                                                onclick="window.location.href='../expediente/expediente.php?mascota_id=<?= $mascota['Mascota_Id'] ?>'">
                                                 <i class="fa-solid fa-eye"></i>
                                             </button>
+
 
                                         </td>
                                     </tr>
@@ -237,8 +239,8 @@ cerrarConexion($mysqli);
                 text: "Esta acción eliminará la mascota permanentemente",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
+                confirmButtonColor: "rgba(127, 25, 25, 1)",
+                cancelButtonColor: "#6a6a6aff",
                 confirmButtonText: "Sí, eliminar",
                 cancelButtonText: "Cancelar"
             }).then((result) => {

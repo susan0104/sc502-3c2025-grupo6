@@ -7,9 +7,7 @@ if (!isset($_SESSION['id'])) {
 }
 
 include("../../assets/php/conexionBD.php");
-
 $mysqli = abrirConexion();
-
 
 $sql = "
     SELECT 
@@ -18,10 +16,16 @@ $sql = "
         m.Raza,
         m.Fecha_registro,
         c.Nombre AS DuenoNombre,
-        e.Nombre AS EspecieNombre
+        e.Nombre AS EspecieNombre,
+        ex.Observaciones,
+        ex.Alergias,
+        ex.Vacunas,
+        ex.Tratamientos,
+        ex.Ultima_actualizacion
     FROM Mascota m
     INNER JOIN Cliente c ON m.Cliente_Id = c.Cliente_Id
     INNER JOIN MascotaEspecie e ON m.Especie_Id = e.Especie_Id
+    LEFT JOIN MascotaExpediente ex ON ex.Mascota_Id = m.Mascota_Id
     ORDER BY m.Mascota_Id DESC
 ";
 
@@ -33,7 +37,6 @@ if ($result) {
         $mascotas[] = $fila;
     }
 }
-
 
 function obtenerUltimaVisita($mysqli, $mascota_id)
 {
@@ -48,13 +51,11 @@ function obtenerUltimaVisita($mysqli, $mascota_id)
     }
 
     $fila = $result->fetch_assoc();
-    $fecha = new DateTime($fila['Fecha']);
-    return $fecha->format("d/m/Y");
+    return (new DateTime($fila['Fecha']))->format("d/m/Y");
 }
-
-cerrarConexion($mysqli);
-
+$paginaActiva = 'expedientes';
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -63,149 +64,121 @@ cerrarConexion($mysqli);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veterinaria Golden Paws</title>
     <link rel="icon" type="image/x-icon" href="../favicon.ico">
-    
-    <!-- Google fonts CDN -->
+
+    <!-- Google fonts -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
 
-    <!-- Bootstrap CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome CDN -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
 
     <link rel="stylesheet" href="../assets/css/style-layout.css">
-    <link rel="stylesheet" href="../assets/css/style-expediente.css">
 </head>
 
 <body>
-
-<nav class="navbar bg-white shadow-sm d-lg-none">
     <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-            <img src="../assets/img/logo.png" alt="Golden Paws" style="height:36px">
-        </a>
-        <button class="btn btn-outline-secondary" type="button" 
-            data-bs-toggle="offcanvas" data-bs-target="#MenuMovil">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-    </div>
-</nav>
+        <div class="row">
 
-<div class="offcanvas offcanvas-start" tabindex="-1" id="MenuMovil">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title">
-            <img src="../assets/img/logo.png" alt="Golden Paws">
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-    </div>
-    <div class="offcanvas-body p-0">
-        <nav class="sidebar-nav p-3 d-flex flex-column justify-content-between" style="height: 100%;">
-            <ul class="nav flex-column gap-1">
-                <li class="nav-item"><a class="nav-link" href="../pages/inicio.html"><i
-                        class="fa-solid fa-house me-2"></i>Inicio</a></li>
-                <li class="nav-item"><a class="nav-link" href="../pages/clientes.html"><i
-                        class="fa-solid fa-user-group me-2"></i>Clientes</a></li>
-                <li class="nav-item"><a class="nav-link active" href="../pages/listaExpedientes.php"><i
-                        class="fa-solid fa-folder-open me-2"></i>Expedientes</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><i
-                        class="fa-solid fa-calendar-check me-2"></i>Citas</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><i
-                        class="fa-solid fa-chart-line me-2"></i>Reportes</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><i
-                        class="fa-regular fa-life-ring me-2"></i>Soporte</a></li>
-            </ul>
-            <div class="mt-auto pt-3 border-top">
-                <a class="nav-link text-danger" href="../index.html"><i
-                    class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión</a>
-            </div>
-        </nav>
-    </div>
-</div>
+            <?php include("../../layout/aside.php"); ?>
 
-<div class="container-fluid">
-    <div class="row">
+            <div class="col-12 col-lg-9 col-xl-10 py-4">
 
-        <aside class="col-lg-3 col-xl-2 d-none d-lg-flex">
-            <div class="sidebar shadow-sm">
-                <div class="p-3 d-flex align-items-center gap-2 border-bottom">
-                    <img src="../assets/img/logo.png" alt="Golden Paws" style="height:40px">
-                </div>
+                <h1 class="mb-4 border-bottom">Expedientes de Mascotas</h1>
 
-                <nav class="sidebar-nav p-3 d-flex flex-column justify-content-between" style="height: 100%;">
-                    <ul class="nav flex-column gap-1">
-                        <li class="nav-item"><a class="nav-link" href="../pages/inicio.html"><i
-                                class="fa-solid fa-house me-2"></i>Inicio</a></li>
-                        <li class="nav-item"><a class="nav-link" href="../pages/clientes.html"><i
-                                class="fa-solid fa-user-group me-2"></i>Clientes</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="../pages/listaExpedientes.php"><i
-                                class="fa-solid fa-folder-open me-2"></i>Expedientes</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#"><i
-                                class="fa-solid fa-calendar-check me-2"></i>Citas</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#"><i
-                                class="fa-solid fa-chart-line me-2"></i>Reportes</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#"><i
-                                class="fa-regular fa-life-ring me-2"></i>Soporte</a></li>
-                    </ul>
-
-                    <div class="mt-auto pt-3 border-top">
-                        <a class="nav-link text-danger" href="../index.html"><i
-                            class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión</a>
+                <!-- Filtros -->
+                <div class="row">
+                    <div class="col-md-5 col-12 mb-4">
+                        <label for="buscarMascota" class="form-label">Nombre Mascota</label>
+                        <input type="text" class="form-control" id="buscarMascota" placeholder="Luna, Max...">
                     </div>
-                </nav>
-            </div>
-        </aside>
 
-        <main class="col-lg-9 col-xl-10 px-4 py-4">
+                    <div class="col-md-5 col-12 mb-4">
+                        <label for="buscarDueno" class="form-label">Propietario</label>
+                        <input type="text" class="form-control" id="buscarDueno" placeholder="Sofía, Mario...">
+                    </div>
 
-            <h2 class="text-center titulo-seccion mb-4">Expedientes de Mascotas</h2>
-
-            <div class="search-box">
-                <label for="buscar" class="form-label fw-semibold">Buscar mascota:</label>
-                <input type="text" id="buscar" class="form-control" placeholder="Ejemplo: Luna, Max, Toby...">
-            </div>
-
-            <?php foreach ($mascotas as $m): 
-                $ultima = obtenerUltimaVisita($mysqli, $m['Mascota_Id']);
-            ?>
-            <div class="card-expediente expediente" data-nombre="<?= strtolower($m['MascotaNombre']) ?>">
-              <div class="row align-items-center">
-                <div class="col-md-3 text-center mb-3 mb-md-0">
-                  <img src="../assets/img/perroEjemplo.jpg" class="foto-mascota mb-2">
+                    <div class="col-md-2 col-12 d-flex align-items-end mb-4">
+                        <button type="button" class="btn btn-primary w-100 me-2" onclick="limpiarFiltros()">
+                            <i class="fa-solid fa-eraser"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="col-md-7">
-                  <h5 class="fw-semibold mb-1"><?= htmlspecialchars($m['MascotaNombre']) ?></h5>
-                  <p class="text-muted mb-1"><?= htmlspecialchars($m['EspecieNombre']) ?> - <?= htmlspecialchars($m['Raza']) ?></p>
-                  <p class="mb-0"><strong>Propietaria:</strong> <?= htmlspecialchars($m['DuenoNombre']) ?></p>
-                  <p class="mb-0"><strong>Última visita:</strong> <?= $ultima ?></p>
+                <!-- Tabla -->
+                <div class="table-responsive mt-4">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th class="color-principal">Nombre</th>
+                                <th class="color-principal">Especie</th>
+                                <th class="color-principal">Raza</th>
+                                <th class="color-principal">Propietario</th>
+                                <th class="color-principal">Última Visita</th>
+                                <th class="text-center color-principal">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaMascotas">
+
+                            <?php foreach ($mascotas as $m):
+                                $ultima = obtenerUltimaVisita($mysqli, $m['Mascota_Id']);
+                                ?>
+                                <tr class="fila-mascota" data-mascota="<?= strtolower($m['MascotaNombre']) ?>"
+                                    data-dueno="<?= strtolower($m['DuenoNombre']) ?>">
+
+                                    <td><?= htmlspecialchars($m['MascotaNombre']) ?></td>
+                                    <td><?= htmlspecialchars($m['EspecieNombre']) ?></td>
+                                    <td><?= htmlspecialchars($m['Raza']) ?></td>
+                                    <td><?= htmlspecialchars($m['DuenoNombre']) ?></td>
+                                    <td><?= $ultima ?></td>
+
+                                    <td class="text-center">
+                                        <button class="btn btn-success me-1"
+                                            onclick="window.location.href='./expediente.php?mascota_id=<?= $m['Mascota_Id'] ?>'">
+                                            <i class="fa-solid fa-folder-open"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="col-md-2 text-center mt-3 mt-md-0">
-                  <a href="expediente.php?mascota_id=<?= $m['Mascota_Id'] ?>" class="btn btn-expediente">
-                    Ver expediente
-                  </a>
-                </div>
-              </div>
             </div>
-            <?php endforeach; ?>
-
-        </main>
-
+        </div>
     </div>
-</div>
 
-<script>
-const buscar = document.getElementById("buscar");
-buscar.addEventListener("input", () => {
-    const texto = buscar.value.toLowerCase();
-    document.querySelectorAll(".expediente").forEach(card => {
-        card.style.display = card.dataset.nombre.includes(texto) ? "block" : "none";
-    });
-});
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        const buscarMascota = document.getElementById("buscarMascota");
+        const buscarDueno = document.getElementById("buscarDueno");
+
+        function filtrar() {
+            const nombre = buscarMascota.value.toLowerCase();
+            const dueno = buscarDueno.value.toLowerCase();
+
+            document.querySelectorAll(".fila-mascota").forEach(fila => {
+                const coincideNombre = fila.dataset.mascota.includes(nombre);
+                const coincideDueno = fila.dataset.dueno.includes(dueno);
+
+                fila.style.display = (coincideNombre && coincideDueno) ? "" : "none";
+            });
+        }
+
+        buscarMascota.addEventListener("input", filtrar);
+        buscarDueno.addEventListener("input", filtrar);
+
+        function limpiarFiltros() {
+            buscarMascota.value = "";
+            buscarDueno.value = "";
+            filtrar();
+        }
+    </script>
 
 </body>
+
 </html>

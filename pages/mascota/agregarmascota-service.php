@@ -7,62 +7,62 @@ include("../../assets/php/conexionBD.php");
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $nombre         = $_POST["nombre"] ?? '';
-    $especie_id     = $_POST["tipo"] ?? '';
-    $raza           = $_POST["raza"] ?? '';
-    $edad           = $_POST["edad"] ?? '';
-    $observaciones  = $_POST["observaciones"] ?? '';
-    $cliente_id     = $_POST["cliente_id"] ?? '';
+    $nombre = $_POST["nombre"] ?? '';
+    $especie_id = $_POST["tipo"] ?? '';
+    $raza = $_POST["raza"] ?? '';
+    $edad = $_POST["edad"] ?? '';
+    $observaciones = $_POST["observaciones"] ?? '';
+    $cliente_id = $_POST["cliente_id"] ?? '';
+    $fotoBase64 = $_POST["fotoBase64"] ?? '';
 
-    if (
-        !$nombre ||
-        !$especie_id ||
-        !$raza ||
-        $edad === '' ||
-        !$observaciones ||
-        !$cliente_id
-    ) {
+    if (!$nombre || !$especie_id || !$raza || $edad === '' || !$cliente_id) {
         echo "error: datos incompletos";
         exit();
     }
 
     $conexion = abrirConexion();
 
-    $sql = "
+    $sqlMascota = "
         INSERT INTO Mascota (
             Nombre,
             Especie_Id,
             Raza,
             Edad,
             Observaciones,
-            Cliente_Id
-        ) VALUES (?, ?, ?, ?, ?, ?)
+            Cliente_Id,
+            Foto
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
     ";
 
-    $stmt = $conexion->prepare($sql);
+    $stmtMascota = $conexion->prepare($sqlMascota);
 
-    if (!$stmt) {
-        echo "error: prepare falló - " . $conexion->error;
+    if (!$stmtMascota) {
+        echo "error: prepare mascota - " . $conexion->error;
         exit();
     }
-
-    $stmt->bind_param(
-        "sisiii",
+    $stmtMascota->bind_param(
+        "sisisis",
         $nombre,
         $especie_id,
         $raza,
         $edad,
         $observaciones,
-        $cliente_id
+        $cliente_id,
+        $fotoBase64
     );
 
-    if ($stmt->execute()) {
-        echo "ok";
-    } else {
-        echo "error: " . $stmt->error;
-    }
+    $stmtMascota->execute();
+    $nuevaMascotaId = $conexion->insert_id;
 
-    $stmt->close();
+    $sqlExp = "INSERT INTO MascotaExpediente (Mascota_Id) VALUES (?)";
+    $stmtExp = $conexion->prepare($sqlExp);
+    $stmtExp->bind_param("i", $nuevaMascotaId);
+    $stmtExp->execute();
+
+    echo "ok";
+
+    $stmtMascota->close();
+    $stmtExp->close();
     cerrarConexion($conexion);
 }
 ?>

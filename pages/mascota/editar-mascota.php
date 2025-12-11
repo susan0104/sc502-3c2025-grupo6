@@ -27,7 +27,8 @@ $sqlMascota = "
         Raza,
         Edad,
         Observaciones,
-        Cliente_Id
+        Cliente_Id,
+        Foto
     FROM Mascota
     WHERE Mascota_Id = ?
 ";
@@ -94,9 +95,18 @@ cerrarConexion($mysqli);
                 </div>
 
                 <form id="formEditarMascota">
+
                     <input type="hidden" id="mascota_id" value="<?= $mascota['Mascota_Id'] ?>">
 
                     <div class="row">
+
+                        <div class="col-12">
+                            <div class="mt-2 mb-3">
+                                <img id="previewFoto" src="<?= $mascota['Foto'] ? $mascota['Foto'] : '' ?>"
+                                    alt="Vista previa"
+                                    style="max-width: 150px; max-height: 150px; display: <?= $mascota['Foto'] ? 'block' : 'none' ?>; border-radius: 8px;">
+                            </div>
+                        </div>
 
                         <div class="col-md-6 mb-4">
                             <label class="form-label">Nombre de la mascota</label>
@@ -117,16 +127,23 @@ cerrarConexion($mysqli);
                             </select>
                         </div>
 
-                        <div class="col-md-6 mb-4">
+                        <div class="col-md-4 mb-4">
                             <label class="form-label">Raza</label>
                             <input type="text" class="form-control" id="raza"
                                 value="<?= htmlspecialchars($mascota['Raza']) ?>">
                         </div>
 
-                        <div class="col-md-6 mb-4">
+                        <div class="col-md-4 mb-4">
                             <label class="form-label">Edad</label>
                             <input type="number" class="form-control" id="edad" min="0" value="<?= $mascota['Edad'] ?>">
                         </div>
+
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">Foto de la mascota</label>
+                            <input type="file" class="form-control" id="foto" accept="image/*">
+                        </div>
+                                
+                        <input type="hidden" id="fotoBase64" name="fotoBase64">
 
                         <div class="col-12 mb-4">
                             <label class="form-label">Observaciones</label>
