@@ -20,7 +20,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link <?= $paginaActiva === 'citas' ? 'active' : '' ?>" href="./gestion-citas.php">
+            <a class="nav-link <?= $paginaActiva === 'citas' ? 'active' : '' ?>" href="../gestion-citas.php">
                 <i class="fa-solid fa-calendar-check me-2"></i>Citas
             </a>
         </li>

@@ -7,135 +7,136 @@ include '../conexionBD.php';
 $mysqli = abrirConexion();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $cliente = trim($_POST['cliente'] ?? '');
-    $id_mascota = trim($_POST['mascota'] ?? '');
-    $servicio = trim($_POST['servicio'] ?? '');
+
+    $cliente_id = (int) ($_POST['cliente'] ?? 0);
+    $mascota_id = (int) ($_POST['mascota'] ?? 0);
+    $servicio_id = (int) ($_POST['servicio'] ?? 0);
     $fecha = trim($_POST['fecha'] ?? '');
     $hora = trim($_POST['hora'] ?? '');
-    $precio = trim($_POST['precio'] ?? '');
+    $precio = (float) ($_POST['precio'] ?? 0);
 
-    $id_mascota = (int) $id_mascota;
-    $precio = (float) $precio;
     $errors = [];
 
-    if ($cliente === '')
-        $errors[] = "cliente es obligatorio.";
-    if ($id_mascota === '')
-        $errors[] = "Mascota es obligatoria.";
-    if ($servicio === '')
-        $errors[] = "Servicio es obligatorio.";
-    if ($fecha === '' || $hora === '')
-        $errors[] = "Fecha y hora son obligatorias.";
+    if ($cliente_id === 0)
+        $errors[] = "El cliente es obligatorio.";
+    if ($mascota_id === 0)
+        $errors[] = "La mascota es obligatoria.";
+    if ($servicio_id === 0)
+        $errors[] = "El servicio es obligatorio.";
 
-    $dateStr = $fecha . ' ' . $hora;
+    if ($fecha === '' || $hora === '') {
+        $errors[] = "Fecha y hora son obligatorias.";
+    }
+
+    $dateStr = "$fecha $hora";
     $dt = DateTime::createFromFormat('Y-m-d H:i', $dateStr);
     $errorsDt = DateTime::getLastErrors();
+
     if (!$dt || $errorsDt) {
-        $errors[] = "Formato de fecha u hora inválido.";
+        $errors[] = "Formato inválido de fecha u hora.";
     } else {
         $now = new DateTime();
         if ($dt <= $now) {
-            $errors[] = "La fecha y hora no pueden ser anteriores a la fecha y hora actual.";
-        } else {
-            $fechaYhora = $dt->format('Y-m-d H:i:00');
+            $errors[] = "La fecha y hora deben ser posteriores a la actual.";
         }
     }
 
-
-    if (empty($errors)) {
-        $id_empleado = null;
-        $appointmentHour = date('H', strtotime($fechaYhora));
-        $hourStart = str_pad($appointmentHour, 2, '0', STR_PAD_LEFT) . ':00:00';
-        $hourEnd = str_pad($appointmentHour + 1, 2, '0', STR_PAD_LEFT) . ':00:00';
-
-        if ($servicio == 'Limpieza Dental' || $servicio == 'Desparasitación' || $servicio == 'Vacunación') {
-            $stmt = $mysqli->prepare("
-                SELECT e.id_empleado FROM empleados e
-                WHERE e.cargo = ?
-                AND NOT EXISTS (
-                    SELECT 1 FROM citas c
-                    WHERE c.id_empleado = e.id_empleado
-                    AND DATE(c.fecha) = ?
-                    AND TIME(c.fecha) >= ?
-                    AND TIME(c.fecha) < ?
-                )
-                LIMIT 1
-            ");
-            if (!$stmt) {
-                $errors[] = "Error en prepare al buscar veterinarios";
-            } else {
-                $cargo = "Veterinario";
-                $fechaOnly = date('Y-m-d', strtotime($fechaYhora));
-                $stmt->bind_param('ssss', $cargo, $fechaOnly, $hourStart, $hourEnd);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                if ($row = $result->fetch_assoc()) {
-                    $id_empleado = $row['id_empleado'];
-                } else {
-                    $errors[] = "No hay empleados disponibles en esta fecha y hora.";
-                }
-            }
-        } else {
-            $stmt = $mysqli->prepare("
-                SELECT e.id_empleado FROM empleados e
-                WHERE e.cargo != ?
-                AND NOT EXISTS (
-                    SELECT 1 FROM citas c
-                    WHERE c.id_empleado = e.id_empleado
-                    AND DATE(c.fecha) = ?
-                    AND TIME(c.fecha) >= ?
-                    AND TIME(c.fecha) < ?
-                )
-                LIMIT 1
-            ");
-            if (!$stmt) {
-                $errors[] = "Error en prepare al buscar empleados";
-            } else {
-                $cargo = "Secretario";
-                $fechaOnly = date('Y-m-d', strtotime($fechaYhora));
-                $stmt->bind_param('ssss', $cargo, $fechaOnly, $hourStart, $hourEnd);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                if ($row = $result->fetch_assoc()) {
-                    $id_empleado = $row['id_empleado'];
-                } else {
-                    $errors[] = "No hay empleados disponibles en esta fecha y hora.";
-                }
-            }
-        }
-        $stmt->close();
+    if (!empty($errors)) {
+        echo json_encode($errors);
+        exit();
     }
 
-    if (empty($errors)) {
-        $stmt = $mysqli->prepare("INSERT INTO citas(id_mascota, id_servicio, id_empleado, fecha, precio, observaciones) VALUES(?,?,?,?,?,?)");
-        if (!$stmt) {
-            $errors[] = "Error en prepare al insertar cita";
-        } else {
-            $observaciones = "";
-            $stmt_servicio = $mysqli->prepare("SELECT id_servicio FROM servicios WHERE nombre = ? LIMIT 1");
-            $stmt_servicio->bind_param('s', $servicio);
-            $stmt_servicio->execute();
-            $result_servicio = $stmt_servicio->get_result();
-            $id_servicio = ($row_servicio = $result_servicio->fetch_assoc()) ? $row_servicio['id_servicio'] : null;
-            $stmt_servicio->close();
+    $fechaInicio = $dt->format("Y-m-d H:i:00");
 
-            if (!$id_mascota || !$id_servicio) {
-                $errors[] = "Mascota o servicio no encontrados en la base de datos.";
-            }
-            $id_servicio = (int) $id_servicio;
-            $id_empleado = (int) $id_empleado;
+    $stmt = $mysqli->prepare("
+        SELECT Nombre, Duracion_estimada 
+        FROM Servicio 
+        WHERE Servicio_Id = ?
+    ");
+    $stmt->bind_param("i", $servicio_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-            $stmt->bind_param("iiisds", $id_mascota, $id_servicio, $id_empleado, $fechaYhora, $precio, $observaciones);
-
-            if (!$stmt->execute()) {
-                $errors[] = "Error al ejecutar la inserción de la cita.";
-            }
-
-            $stmt->close();
-        }
+    if (!$row = $result->fetch_assoc()) {
+        $errors[] = "El servicio no existe.";
+        echo json_encode($errors);
+        exit();
     }
 
+    $nombreServicio = $row['Nombre'];
+    $duracionMinutos = (int) $row['Duracion_estimada'];
+    $stmt->close();
+
+    if ($nombreServicio === "Baño Grooming") {
+        $rolRequeridos = [2, 3];
+    } else {
+        $rolRequeridos = [2];
+    }
+
+    $dtFin = clone $dt;
+    $dtFin->modify("+$duracionMinutos minutes");
+    $fechaFin = $dtFin->format("Y-m-d H:i:00");
+
+    $placeholders = implode(',', array_fill(0, count($rolRequeridos), '?'));
+    $types = str_repeat("i", count($rolRequeridos));
+
+    $sql = "
+        SELECT u.Usuario_Id
+        FROM Usuario u
+        WHERE u.Rol_Id IN ($placeholders)
+        AND NOT EXISTS (
+            SELECT 1
+            FROM Citas c
+            WHERE c.Usuario_Id = u.Usuario_Id
+            AND (
+                c.Fecha < ?
+                AND DATE_ADD(c.Fecha, INTERVAL 
+                    (SELECT Duracion_estimada FROM Servicio WHERE Servicio_Id = c.Servicio_Id) MINUTE
+                ) > ?
+            )
+        )
+        LIMIT 1
+    ";
+
+    $stmt = $mysqli->prepare($sql);
+    $params = array_merge($rolRequeridos, [$fechaFin, $fechaInicio]);
+    $stmt->bind_param($types . "ss", ...$params);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if (!$empleado = $result->fetch_assoc()) {
+        $errors[] = "No hay empleados disponibles para ese horario.";
+        echo json_encode($errors);
+        exit();
+    }
+
+    $empleado_id = $empleado['Usuario_Id'];
+    $stmt->close();
+
+    $estado = "Programada";
+
+    $stmt = $mysqli->prepare("
+        INSERT INTO Citas (Mascota_Id, Servicio_Id, Usuario_Id, Fecha, Estado, Precio)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+
+    $stmt->bind_param(
+        "iiissd",
+        $mascota_id,
+        $servicio_id,
+        $empleado_id,
+        $fechaInicio,
+        $estado,
+        $precio
+    );
+
+    if (!$stmt->execute()) {
+        $errors[] = "Error al insertar la cita: " . $stmt->error;
+    }
+
+    $stmt->close();
     cerrarConexion($mysqli);
+
     echo json_encode($errors);
     exit();
 }

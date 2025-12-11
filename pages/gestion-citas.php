@@ -6,28 +6,39 @@ error_reporting(E_ALL);
 include '../assets/php/conexionBD.php';
 
 $mysqli = abrirConexion();
-$servicios = $mysqli->query("SELECT id_servicio, nombre, precio FROM servicios");
-$citas = $mysqli->query(
-  "SELECT c.id_cita, c.id_mascota, c.id_servicio, DATE(c.fecha) AS fecha, TIME(c.fecha) AS hora, "
-  . "s.nombre AS servicio, s.precio AS precio, m.nombre AS mascota, u.nombre AS cliente "
-  . "FROM citas c "
-  . "LEFT JOIN mascotas m ON c.id_mascota = m.id_mascota "
-  . "LEFT JOIN usuarios u ON m.id_usuario = u.id_usuario "
-  . "LEFT JOIN servicios s ON c.id_servicio = s.id_servicio"
-);
-$clientes = $mysqli->query("SELECT id_usuario, nombre FROM usuarios");
-$usuario = isset($_GET['cliente']) ? htmlspecialchars($_GET['cliente']) : '';
 
-function obtenerMascotasUsuario($nombreUsuario, $mysqli)
+$servicios = $mysqli->query("SELECT Servicio_Id, Nombre, Precio FROM Servicio");
+$citas = $mysqli->query(
+  "SELECT
+     c.Cita_Id,
+     c.Mascota_Id,
+     c.Servicio_Id,
+     DATE(c.Fecha) AS fecha,
+     TIME(c.Fecha) AS hora,
+     s.Nombre AS servicio,
+     s.Precio AS precio,
+     m.Nombre AS mascota,
+     cl.Nombre AS cliente,
+     u.Nombre AS empleado
+   FROM Citas c
+   LEFT JOIN Mascota m ON c.Mascota_Id = m.Mascota_Id
+   LEFT JOIN Cliente cl ON m.Cliente_Id = cl.Cliente_Id
+   LEFT JOIN Servicio s ON c.Servicio_Id = s.Servicio_Id
+   LEFT JOIN Usuario u ON c.Usuario_Id = u.Usuario_Id
+   ORDER BY c.Fecha DESC"
+);
+
+$clientes = $mysqli->query("SELECT Cliente_Id, Nombre FROM Cliente ORDER BY Nombre");
+$clienteSeleccionado = isset($_GET['cliente']) ? intval($_GET['cliente']) : 0;
+
+function obtenerMascotasCliente($clienteId, $mysqli)
 {
-  if (empty($nombreUsuario)) {
+  if (empty($clienteId)) {
     return null;
   }
-  $query = "SELECT m.id_mascota, m.nombre FROM mascotas m 
-            INNER JOIN usuarios u ON m.id_usuario = u.id_usuario 
-            WHERE u.nombre = ?";
+  $query = "SELECT Mascota_Id, Nombre FROM Mascota WHERE Cliente_Id = ?";
   $stmt = $mysqli->prepare($query);
-  $stmt->bind_param('s', $nombreUsuario);
+  $stmt->bind_param('i', $clienteId);
   $stmt->execute();
   return $stmt->get_result();
 }
@@ -45,8 +56,7 @@ function obtenerMascotasUsuario($nombreUsuario, $mysqli)
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" />
   <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
   <link rel="stylesheet" href="../assets/css/style-layout.css" />
@@ -137,7 +147,7 @@ function obtenerMascotasUsuario($nombreUsuario, $mysqli)
               </li>
             </ul>
             <div class="mt-auto pt-3 border-top">
-              <a class="nav-link text-danger" href="../index.html"><i
+              <a class="nav-link text-danger" href="../index.php"><i
                   class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión</a>
             </div>
           </nav>
@@ -152,22 +162,25 @@ function obtenerMascotasUsuario($nombreUsuario, $mysqli)
             <label class="form-label">Cliente</label>
             <select id="cliente" class="form-control"
               onchange="window.location.href='gestion-citas.php?cliente=' + encodeURIComponent(this.value);">
-              <option value="" disabled selected>
+              <option value="" disabled <?= ($clienteSeleccionado == 0) ? 'selected' : '' ?>>
                 Selecciona un cliente
               </option>
               <?php
               $clientes->data_seek(0);
               while ($fila = $clientes->fetch_assoc()):
+                $idCliente = intval($fila['Cliente_Id']);
+                $nombreCliente = htmlspecialchars($fila['Nombre']);
                 ?>
-                <option value="<?php echo htmlspecialchars($fila['nombre']); ?>" <?= ($usuario === $fila['nombre']) ? 'selected' : '' ?>>
-                  <?= htmlspecialchars($fila['nombre']) ?>
+                <option value="<?= $idCliente ?>" <?= ($clienteSeleccionado === $idCliente) ? 'selected' : '' ?>>
+                  <?= $nombreCliente ?>
                 </option>
               <?php endwhile; ?>
             </select>
           </div>
+
           <div class="col-md-2 col-12 mb-3">
             <label class="form-label">Mascota</label>
-            <?php if ($usuario == ''): ?>
+            <?php if ($clienteSeleccionado === 0): ?>
               <input type="text" id="mascota" class="form-control" value="Selecciona un cliente" disabled />
             <?php else: ?>
               <select id="mascota" class="form-control">
@@ -175,22 +188,23 @@ function obtenerMascotasUsuario($nombreUsuario, $mysqli)
                   Selecciona una mascota
                 </option>
                 <?php
-                $mascotas = obtenerMascotasUsuario($usuario, $mysqli);
+                $mascotas = obtenerMascotasCliente($clienteSeleccionado, $mysqli);
                 if ($mascotas && $mascotas->num_rows > 0):
                   while ($mascota = $mascotas->fetch_assoc()):
                     ?>
-                    <option value="<?= htmlspecialchars($mascota['id_mascota']) ?>">
-                      <?= htmlspecialchars($mascota['nombre']) ?>
+                    <option value="<?= htmlspecialchars($mascota['Mascota_Id']) ?>">
+                      <?= htmlspecialchars($mascota['Nombre']) ?>
                     </option>
                     <?php
                   endwhile;
                 else:
                   ?>
-                  <option disabled>No hay mascotas para este usuario</option>
+                  <option disabled>No hay mascotas para este cliente</option>
                 <?php endif; ?>
               </select>
             <?php endif; ?>
           </div>
+
           <div class="col-md-2 col-12 mb-3">
             <label class="form-label">Servicio</label>
             <select id="servicio" class="form-control">
@@ -198,23 +212,27 @@ function obtenerMascotasUsuario($nombreUsuario, $mysqli)
                 Selecciona un servicio
               </option>
               <?php while ($fila = $servicios->fetch_assoc()): ?>
-                <option value="<?php echo $fila['nombre']; ?>" data-precio="<?= htmlspecialchars($fila['precio']) ?>">
-                  <?= htmlspecialchars($fila['nombre']) ?>
+                <option value="<?php echo intval($fila['Servicio_Id']); ?>"
+                  data-precio="<?= htmlspecialchars($fila['Precio']) ?>">
+                  <?= htmlspecialchars($fila['Nombre']) ?>
                 </option>
               <?php endwhile; ?>
             </select>
           </div>
+
           <div class="col-md-2 col-12 mb-3">
             <label class="form-label">Fecha</label>
             <input type="date" id="fecha" class="form-control" />
           </div>
+
           <div class="col-md-2 col-12 mb-3">
             <label class="form-label">Hora</label>
             <input type="time" id="hora" class="form-control" />
           </div>
+
           <div class="col-md-2 col-12 mb-3">
             <label class="form-label">Precio</label>
-            <input type="number" id="precio" class="form-control" placeholder="₡" value="<?php ?>" readonly />
+            <input type="number" id="precio" class="form-control" placeholder="₡" value="" readonly />
           </div>
         </div>
 
@@ -250,12 +268,11 @@ function obtenerMascotasUsuario($nombreUsuario, $mysqli)
                   <td><?php echo htmlspecialchars($fila["hora"]) ?></td>
                   <td>₡<?php echo htmlspecialchars($fila["precio"]) ?></td>
                   <td class="text-center">
-                    <button class="btn btn-warning btn-sm me-1"
-                      onclick="editarCita(<?= htmlspecialchars($fila['id_cita']) ?>)">
+                    <button class="btn btn-warning btn-sm me-1" onclick="editarCita(<?= intval($fila['Cita_Id']) ?>)">
                       <i class="fa-solid fa-pen-to-square"></i>
                     </button>
                     <button class="btn btn-danger btn-sm"
-                      onclick="eliminarCita(<?= htmlspecialchars($fila['id_cita']) ?>, <?= htmlspecialchars($fila['fecha']) ?>)">
+                      onclick="eliminarCita(<?= intval($fila['Cita_Id']) ?>, '<?= htmlspecialchars($fila['fecha']) ?>')">
                       <i class="fa-solid fa-trash"></i>
                     </button>
                   </td>
@@ -280,8 +297,7 @@ function obtenerMascotasUsuario($nombreUsuario, $mysqli)
         </div>
         <div class="modal-body">
           <p>
-            ⚠️ Al cancelar la cita el mismo día, recuerde al usuario que se le
-            cobrará el
+            ⚠️ Al cancelar la cita el mismo día, recuerde al usuario que se le cobrará el
             <strong>50% del valor</strong> de la cita.
           </p>
         </div>
@@ -297,9 +313,7 @@ function obtenerMascotasUsuario($nombreUsuario, $mysqli)
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="../assets/js/gestion-citas.js"></script>
 </body>
