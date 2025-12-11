@@ -1,3 +1,24 @@
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+include("../../assets/php/conexionBD.php");
+$mysqli = abrirConexion();
+
+$roles = [];
+$sql = "SELECT Rol_Id, Nombre FROM UsuarioRol ORDER BY Nombre ASC";
+$resultado = $mysqli->query($sql);
+
+if ($resultado) {
+    while ($fila = $resultado->fetch_assoc()) {
+        $roles[] = $fila;
+    }
+}
+
+cerrarConexion($mysqli);
+?>
+
 <!DOCTYPE html>
 <html lang="es">
   <head>
@@ -22,7 +43,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
     />
-    <link rel="stylesheet" href="../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
   </head>
 
   <body>
@@ -34,7 +55,7 @@
               <div class="row g-0">
                 <div class="col-lg-6 d-none d-lg-flex login-imagen p-0">
                   <img
-                    src="../assets/img/smiling-dog.jpg"
+                    src="../../assets/img/smiling-dog.jpg"
                     alt="Golden Paws Grooming"
                     class="img-fluid w-100 h-100"
                   />
@@ -50,7 +71,7 @@
                     >
                       <div class="mb-4">
                         <img
-                          src="../assets/img/logo.png"
+                          src="../../assets/img/logo.png"
                           alt="Golden Paws"
                           style="height: 70px"
                         />
@@ -74,32 +95,42 @@
                         </div>
 
                         <div class="mb-3 text-start">
-                          <label for="correo" class="form-label">Usuario</label>
+                          <label for="usuario" class="form-label">Usuario</label>
                           <input
-                            type="email"
+                            type="text"
                             class="form-control"
-                            id="correo"
-                            placeholder="usuario@goldenpaws.cr"
+                            id="usuario"
+                            placeholder="bmartinez"
                             required
                           />
                         </div>
 
                         <div class="mb-3 text-start">
-                          <label for="cargo" class="form-label">Cargo</label>
-                          <!-- //Todo: dropdown con opciones predefinidas -->
-                          <select
+                          <label for="correo" class="form-label">Correo</label>
+                          <input
+                            type="email"
                             class="form-control"
-                            name="cargo"
-                            id="cargo"
+                            id="correo"
+                            placeholder="bmartinez@goldenpaws.cr"
                             required
-                          >
+                          />
+                        </div>
+
+                        <div class="mb-3 text-start">
+                        <label for="cargo" class="form-label">Cargo</label>
+                        <select class="form-control" name="cargo" id="cargo" required>
+
                             <option value="" disabled selected>
-                              Selecciona un cargo
+                            Selecciona un cargo
                             </option>
-                            <option value="Veterinario">Veterinario</option>
-                            <option value="Secretario">Secretario</option>
-                            <option value="Asistente">Asistente</option>
-                          </select>
+
+                            <?php foreach ($roles as $rol): ?>
+                            <option value="<?= $rol['Rol_Id'] ?>">
+                                <?= $rol['Nombre'] ?>
+                            </option>
+                            <?php endforeach; ?>
+
+                        </select>
                         </div>
 
                         <div class="mb-3 text-start">
@@ -123,9 +154,7 @@
 
                         <p class="mt-4 mb-0 text-center text-muted">
                           ¿Ya tienes cuenta?
-                          <a href="../index.html" class="text-decoration-none"
-                            >Inicia sesión</a
-                          >
+                          <a href="../../index.php" class="text-decoration-none">Inicia sesión</a>
                         </p>
                       </form>
                     </div>
@@ -140,6 +169,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../assets/php/registro/registro.js"></script>
+    <script src="registro.js"></script>
   </body>
 </html>
