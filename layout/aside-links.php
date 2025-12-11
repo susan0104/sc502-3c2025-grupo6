@@ -14,7 +14,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link <?= $paginaActiva === 'expedientes' ? 'active' : '' ?>" href="./listaExpedientes.php">
+            <a class="nav-link <?= $paginaActiva === 'expedientes' ? 'active' : '' ?>" href="../expediente/listaExpedientes.php">
                 <i class="fa-solid fa-folder-open me-2"></i>Expedientes
             </a>
         </li>

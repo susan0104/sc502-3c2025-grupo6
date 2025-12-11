@@ -23,7 +23,7 @@ CREATE TABLE Servicio (
   Precio DECIMAL(10,2) NOT NULL,
   Duracion_estimada INT  -- minutos
 );
-SELECT * FROM Citas;
+
 /*LAS INSERCIONES DE LAS TABLAS AUXILIARES*/
 INSERT INTO UsuarioRol (Nombre) values ('Secretaria');
 INSERT INTO UsuarioRol (Nombre) values ('Veterinaria');
@@ -54,18 +54,34 @@ CREATE TABLE Usuario (
   CONSTRAINT FK_USUARIOROL FOREIGN KEY (Rol_Id) REFERENCES UsuarioRol (Rol_Id)
 );
 
-CREATE TABLE expedientes (
-  id_expediente INT AUTO_INCREMENT PRIMARY KEY,
-  id_mascota INT NOT NULL,
-  fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-  ultima_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  observaciones TEXT,
-  alergias TEXT,
-  vacunas TEXT,
-  tratamientos TEXT,
+/*LAS INSERCIONES DE LAS TABLAS AUXILIARES*/
+INSERT INTO UsuarioRol (Nombre) values ('Secretaria');
+INSERT INTO UsuarioRol (Nombre) values ('Veterinaria');
+INSERT INTO UsuarioRol (Nombre) values ('Asistente');
 
-  CONSTRAINT fk_expediente_mascota
-    FOREIGN KEY (id_mascota) REFERENCES mascotas(id_mascota)
+INSERT INTO ClientePlan (Nombre) values ('Estándar');
+INSERT INTO ClientePlan (Nombre) values ('Avanzado');
+INSERT INTO ClientePlan (Nombre) values ('Premium');
+
+INSERT INTO MascotaEspecie (Nombre) values ('Perro');
+INSERT INTO MascotaEspecie (Nombre) values ('Gato');
+INSERT INTO MascotaEspecie (Nombre) values ('Ave');
+
+INSERT INTO Servicio (Nombre, Descripcion, Precio, Duracion_estimada) values ('Revisión General', 'Consulta básica de estado',18500,30);
+INSERT INTO Servicio (Nombre, Descripcion, Precio, Duracion_estimada) values ('Vacunacion Anual', 'Incluye multiple y rabia y distemper',34800,20);
+INSERT INTO Servicio (Nombre, Descripcion, Precio, Duracion_estimada) values ('Baño Grooming', 'Servicio de baño estandar',10000,60);
+
+/*TABLAS BASE DE LA VETERINARIA*/
+
+CREATE TABLE Usuario (
+  Usuario_Id INT AUTO_INCREMENT PRIMARY KEY,
+  Nombre VARCHAR(150) NOT NULL,
+  Usuario VARCHAR(80) NOT NULL UNIQUE,
+  Contrasena VARCHAR(255) NOT NULL,
+  Correo VARCHAR(100) NOT NULL,
+  Rol_Id SMALLINT NOT NULL,
+  Fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT FK_USUARIOROL FOREIGN KEY (Rol_Id) REFERENCES UsuarioRol (Rol_Id)
 );
 
 CREATE TABLE Mascota (
@@ -104,15 +120,10 @@ CREATE TABLE Citas (
   Precio DECIMAL(10,2),
   Observaciones TEXT,
 
-  CONSTRAINT fk_cita_mascota
-    FOREIGN KEY (id_mascota) REFERENCES mascotas(id_mascota)
-    ON DELETE CASCADE,
+  CONSTRAINT fk_cita_mascota FOREIGN KEY (Mascota_Id) REFERENCES Mascota (Mascota_Id) ON DELETE CASCADE,
 
-  CONSTRAINT fk_cita_servicio
-    FOREIGN KEY (id_servicio) REFERENCES servicios(id_servicio),
+  CONSTRAINT fk_cita_servicio FOREIGN KEY (Servicio_Id) REFERENCES Servicio (Servicio_Id),
 
-  CONSTRAINT fk_cita_empleado
-    FOREIGN KEY (id_empleado) REFERENCES empleados(id_empleado)
+  CONSTRAINT fk_cita_usuario FOREIGN KEY (Usuario_Id) REFERENCES Usuario (Usuario_Id)
 );
 
-SELECT * FROM cliente;
