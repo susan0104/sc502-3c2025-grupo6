@@ -34,22 +34,11 @@ async function agregarCita() {
   });
 
   if (!cliente || !mascota || !servicio || !fecha || !hora || !precio) {
-    Toast.fire({
-      icon: "warning",
-      title: "Debe completar todos los campos",
-    });
+    Toast.fire({ icon: "warning", title: "Debe completar todos los campos" });
     return;
   }
 
   if (citaAEditar) {
-    citaAEditar.cliente = cliente;
-    citaAEditar.mascota = mascota;
-    citaAEditar.servicio = servicio;
-    citaAEditar.fecha = fecha;
-    citaAEditar.hora = hora;
-    citaAEditar.precio = precio;
-    btnAgregar.innerHTML = '<i class="fa-solid fa-plus me-1"></i>Agregar Cita';
-
     const formData = new FormData();
     formData.append("id_cita", citaAEditar.id);
     formData.append("cliente", cliente);
@@ -68,16 +57,11 @@ async function agregarCita() {
       });
 
       if (!response.ok) {
-        Toast.fire({
-          icon: "error",
-          title: "Error de conexión",
-        });
+        Toast.fire({ icon: "error", title: "Error de conexión" });
         return;
       }
 
-      console.log("Respuesta de actualizar_cita.php:", response);
       const data = await response.json();
-      console.log("Respuesta de actualizar_cita.php:", data);
 
       if (data.length === 0) {
         Toast.fire({
@@ -86,20 +70,17 @@ async function agregarCita() {
         });
         limpiarFormulario();
       } else {
-        const mensajeError = data.join("\n");
         Swal.fire({
           icon: "error",
           title: "Error al actualizar cita",
-          text: mensajeError,
+          text: data.join("\n"),
         });
       }
     } catch (error) {
-      console.log("Error:", error);
-      Toast.fire({
-        icon: "error",
-        title: "Error en la solicitud",
-      });
+      Toast.fire({ icon: "error", title: "Error en la solicitud" });
     }
+
+    btnAgregar.innerHTML = '<i class="fa-solid fa-plus me-1"></i>Agregar Cita';
   } else {
     const formData = new FormData();
     formData.append("cliente", cliente);
@@ -116,35 +97,25 @@ async function agregarCita() {
       });
 
       if (!response.ok) {
-        Toast.fire({
-          icon: "error",
-          title: "Error de conexión",
-        });
+        Toast.fire({ icon: "error", title: "Error de conexión" });
         return;
       }
 
       const data = await response.json();
 
       if (data.length === 0) {
-        Toast.fire({
-          icon: "success",
-          title: "Cita agregada correctamente",
-        });
+        Toast.fire({ icon: "success", title: "Cita agregada correctamente" });
         limpiarFormulario();
       } else {
-        const mensajeError = data.join("\n");
         Swal.fire({
           icon: "error",
           title: "Error al agregar cita",
-          text: mensajeError,
+          text: data.join("\n"),
         });
       }
     } catch (error) {
-      console.log("Error:", error);
-      Toast.fire({
-        icon: "error",
-        title: "Error en la solicitud",
-      });
+      console.log(error);
+      Toast.fire({ icon: "error", title: "Error en la solicitud" });
     }
   }
 }
@@ -161,12 +132,12 @@ function limpiarFormulario() {
   btnAgregar.innerHTML = '<i class="fa-solid fa-plus me-1"></i>Agregar Cita';
 }
 
-async function editarCita(index) {
+async function editarCita(id) {
   btnAgregar.innerHTML = '<i class="fa-solid fa-pencil me-1"></i>Editar Cita';
 
   try {
     const formData = new FormData();
-    formData.append("index", index);
+    formData.append("id_cita", id);
 
     const response = await fetch("../assets/php/citas/obtener_cita.php", {
       method: "POST",
@@ -174,10 +145,7 @@ async function editarCita(index) {
     });
 
     if (!response.ok) {
-      Swal.fire({
-        icon: "error",
-        title: "Error de conexión",
-      });
+      Swal.fire({ icon: "error", title: "Error de conexión" });
       return;
     }
 
@@ -202,28 +170,24 @@ async function editarCita(index) {
     document.getElementById("hora").value = cita.hora;
     document.getElementById("precio").value = cita.precio;
 
-    citaAEditar = { id: index, ...cita };
+    citaAEditar = { id: id, ...cita };
   } catch (error) {
-    console.log("Error:", error);
-    Swal.fire({
-      icon: "error",
-      title: "Error en la solicitud",
-    });
+    Swal.fire({ icon: "error", title: "Error en la solicitud" });
   }
 }
 
-async function eliminarCita(index, fecha) {
+async function eliminarCita(id, fecha) {
   const hoy = new Date().toISOString().split("T")[0];
 
   if (fecha === hoy) {
-    citaPendienteEliminar = index;
+    citaPendienteEliminar = id;
     modal.show();
     return;
   }
 
   try {
     const formData = new FormData();
-    formData.append("id_cita", index);
+    formData.append("id_cita", id);
 
     const response = await fetch("../assets/php/citas/eliminar_cita.php", {
       method: "POST",
@@ -231,46 +195,36 @@ async function eliminarCita(index, fecha) {
     });
 
     if (!response.ok) {
-      Swal.fire({
-        icon: "error",
-        title: "Error de conexión",
-      });
+      Swal.fire({ icon: "error", title: "Error de conexión" });
       return;
     }
 
     const data = await response.json();
 
     if (data.length === 0) {
-      Swal.fire({
-        icon: "success",
-        title: "Cita eliminada correctamente",
-      });
+      Swal.fire({ icon: "success", title: "Cita eliminada correctamente" });
       limpiarFormulario();
     } else {
-      const mensajeError = data.join("\n");
       Swal.fire({
         icon: "error",
         title: "Error al eliminar cita",
-        text: mensajeError,
+        text: data.join("\n"),
       });
     }
   } catch (error) {
-    console.log("Error:", error);
-    Swal.fire({
-      icon: "error",
-      title: "Error en la solicitud",
-    });
+    Swal.fire({ icon: "error", title: "Error en la solicitud" });
   }
 }
 
 async function confirmarEliminacion() {
   if (citaPendienteEliminar !== null) {
+    const id = citaPendienteEliminar;
     citaPendienteEliminar = null;
     modal.hide();
+
     try {
       const formData = new FormData();
-      formData.append("id_cita", citas[index].id);
-      formData.append("fecha", fecha);
+      formData.append("id_cita", id);
 
       const response = await fetch("../assets/php/citas/eliminar_cita.php", {
         method: "POST",
@@ -278,35 +232,24 @@ async function confirmarEliminacion() {
       });
 
       if (!response.ok) {
-        Swal.fire({
-          icon: "error",
-          title: "Error de conexión",
-        });
+        Swal.fire({ icon: "error", title: "Error de conexión" });
         return;
       }
 
       const data = await response.json();
 
       if (data.length === 0) {
-        Swal.fire({
-          icon: "success",
-          title: "Cita eliminada correctamente",
-        });
+        Swal.fire({ icon: "success", title: "Cita eliminada correctamente" });
         limpiarFormulario();
       } else {
-        const mensajeError = data.join("\n");
         Swal.fire({
           icon: "error",
           title: "Error al eliminar cita",
-          text: mensajeError,
+          text: data.join("\n"),
         });
       }
     } catch (error) {
-      console.log("Error:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error en la solicitud",
-      });
+      Swal.fire({ icon: "error", title: "Error en la solicitud" });
     }
   }
 }
