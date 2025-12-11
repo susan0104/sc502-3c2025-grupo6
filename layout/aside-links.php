@@ -20,14 +20,8 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link <?= $paginaActiva === 'citas' ? 'active' : '' ?>" href="../gestion-citas.php">
+            <a class="nav-link <?= $paginaActiva === 'citas' ? 'active' : '' ?>" href="../citas/gestion-citas.php">
                 <i class="fa-solid fa-calendar-check me-2"></i>Citas
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link <?= $paginaActiva === 'reportes' ? 'active' : '' ?>" href="#">
-                <i class="fa-solid fa-chart-line me-2"></i>Reportes
             </a>
         </li>
 
